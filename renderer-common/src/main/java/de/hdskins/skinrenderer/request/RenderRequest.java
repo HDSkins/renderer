@@ -87,12 +87,19 @@ public class RenderRequest {
             this.mode = mode;
         }
 
-        @SuppressWarnings("unchecked")
         public <T> Builder withProperty(RenderRequestProperty<T> property, T value) {
+            return this.withProperty(property, value, false);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> Builder withProperty(RenderRequestProperty<T> property, T value, boolean suppressNotApplicable) {
             if (this.properties.containsKey(property)) {
                 throw new IllegalStateException("Property " + property.getId() + " already set");
             }
             if (!property.isApplicableForMode(this.mode)) {
+                if (suppressNotApplicable) {
+                    return this;
+                }
                 throw new IllegalStateException("Property " + property.getId() + " is not applicable for the mode " + this.mode);
             }
             this.properties.put((RenderRequestProperty<Object>) property, value);
