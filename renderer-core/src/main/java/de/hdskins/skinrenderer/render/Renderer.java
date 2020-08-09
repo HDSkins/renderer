@@ -1,0 +1,144 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2015-2018, Una Thompson (unascribed)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package de.hdskins.skinrenderer.render;
+
+import com.google.common.collect.Lists;
+import de.hdskins.skinrenderer.RenderContext;
+import de.hdskins.skinrenderer.RenderRequest;
+import de.hdskins.skinrenderer.Vertices;
+import de.hdskins.skinrenderer.render.primitive.Primitive;
+import org.lwjgl.BufferUtils;
+
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_BGRA;
+import static org.lwjgl.opengl.GL15.*;
+
+public abstract class Renderer {
+
+    public List<Primitive> primitives = Lists.newArrayList();
+
+    private boolean initialized = false;
+
+    public RenderContext owner;
+
+    private RenderRequest request;
+
+    public int cubeVbo;
+
+    public Renderer(RenderContext owner) {
+        this.owner = owner;
+    }
+
+    public void addPrimitive(Primitive primitive) {
+        this.primitives.add(primitive);
+    }
+
+    protected void preRender(int width, int height) {
+    }
+
+    protected void postRender(int width, int height) {
+    }
+
+    public void render(int width, int height) {
+        this.initGL(width, height);
+        this.preRender(width, height);
+        for (Primitive primitive : this.primitives) {
+            primitive.render(this.request, this);
+        }
+        this.postRender(width, height);
+    }
+
+    public void destroy() {
+        this.primitives.clear();
+        this.initialized = false;
+    }
+
+    public void init(RenderRequest request) {
+        if (!this.initialized) {
+            IntBuffer ids = BufferUtils.createIntBuffer(1);
+            glGenBuffers(ids);
+            this.cubeVbo = ids.get();
+
+            float[] vertices = request.isBack() ? Vertices.BACK_VERTICES : Vertices.FRONT_VERTICES;
+            FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
+            vertexBuffer.put(vertices);
+            vertexBuffer.flip();
+            glBindBuffer(GL_ARRAY_BUFFER, this.cubeVbo);
+            glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
+        }
+
+        this.request = request;
+        this.initPrimitives(request);
+        this.initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
+    }
+
+    protected abstract void initPrimitives(RenderRequest request);
+
+    protected void initGL(float width, float height) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glViewport(0, 0, (int) width, (int) height);
+        glEnable(GL_DEPTH_TEST);
+
+        double fov = 45;
+        double aspect = width / height;
+
+        double zNear = 0.1;
+        double zFar = 100;
+
+        double fH = Math.tan((fov / 360) * Math.PI) * zNear;
+        double fW = fH * aspect;
+        glFrustum(-fW, fW, -fH, fH, zNear, zFar);
+
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glEnable(GL_CULL_FACE);
+    }
+
+    public void finish() {
+    }
+
+    public BufferedImage readPixels(int width, int height) {
+        glReadBuffer(GL_FRONT);
+        ByteBuffer buf = BufferUtils.createByteBuffer(width * height * 4);
+        glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, buf);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        int[] pixels = new int[width * height];
+        buf.asIntBuffer().get(pixels);
+        img.setRGB(0, 0, width, height, pixels, 0, width);
+        return img;
+    }
+}

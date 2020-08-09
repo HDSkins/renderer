@@ -1,0 +1,147 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2015-2018, Una Thompson (unascribed)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package de.hdskins.skinrenderer.render;
+
+import de.hdskins.skinrenderer.RenderContext;
+import de.hdskins.skinrenderer.RenderRequest;
+import de.hdskins.skinrenderer.render.primitive.Group;
+import de.hdskins.skinrenderer.render.primitive.PrimitiveBuilder;
+
+public class BodyRenderer extends Renderer {
+
+    public BodyRenderer(RenderContext owner) {
+        super(owner);
+    }
+
+    @Override
+    protected void initPrimitives(RenderRequest request) {
+        float tilt = request.getRotationY();
+        float angle = request.getRotationX();
+
+        Group group = PrimitiveBuilder.group()
+                .x(0).y(request.isFull() ? (request.isFlipped() ? -2.7f : -2.8f) : -1f).z(request.isFull() ? -10.35f : -6f)
+                .rotX(tilt).rotY(angle)
+                .primitive();
+        this.addPrimitive(group);
+
+        if (request.isFull() || request.isFlipped()) {
+            PrimitiveBuilder.plane()
+                    .y(request.isFull() ? (request.isFlipped() ? 6.825f : 7f) : 2.85f)
+                    .scaleX(1.85f).scaleZ(request.isFlipped() ? 1.85f : 0.85f)
+                    .texture(TextureType.ALL).lit(false)
+                    .addTo(group);
+        }
+
+        Group group2 = new Group();
+        if (request.isFlipped()) {
+            group2.rotZ = 180;
+            group2.y = ((-group.y) * 2) + (request.isFull() ? 0.3f : -0.25f);
+        }
+        group.members.add(group2);
+
+        // head
+        PrimitiveBuilder.cube().texture(TextureType.HEAD).addTo(group2);
+        PrimitiveBuilder.cube().scale(1.05f).texture(TextureType.HEAD_OVERLAY).depthMask(false).addTo(group2);
+
+        // body
+        PrimitiveBuilder.cube().y(2.5f).scaleY(1.5f).scaleZ(0.5f).texture(TextureType.BODY).addTo(group2);
+        PrimitiveBuilder.cube().y(2.5f).scale(1.05f, 1.55f, 0.55f).texture(TextureType.BODY_OVERLAY).depthMask(false).addTo(group2);
+
+        boolean mirror = request.isBack();
+
+        // left arm
+        PrimitiveBuilder.cube()
+                .x(request.isSlim() ? 1.375f : 1.5f).y(2.5f)
+                .scale(request.isSlim() ? 0.375f : 0.5f, 1.5f, 0.5f)
+                .rotX(-request.getLegRotation())
+                .rotZ(-10f)
+                .texture(mirror, request.isSlim() ? TextureType.LARM_SLIM : TextureType.LARM)
+                .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                .addTo(group2);
+        PrimitiveBuilder.cube()
+                .x(request.isSlim() ? 1.375f : 1.5f).y(2.5f)
+                .scale(request.isSlim() ? 0.425f : 0.55f, 1.55f, 0.55f)
+                .rotX(-request.getLegRotation())
+                .rotZ(-10f)
+                .texture(mirror, request.isSlim() ? TextureType.LARM_SLIM_OVERLAY : TextureType.LARM_OVERLAY)
+                .depthMask(false)
+                .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                .addTo(group2);
+
+        // right arm
+        PrimitiveBuilder.cube()
+                .x(request.isSlim() ? -1.375f : -1.5f).y(2.5f)
+                .scale(request.isSlim() ? 0.375f : 0.5f, 1.5f, 0.5f)
+                .rotX(request.getLegRotation())
+                .rotZ(10f)
+                .texture(mirror, request.isSlim() ? TextureType.RARM_SLIM : TextureType.RARM)
+                .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                .addTo(group2);
+        PrimitiveBuilder.cube()
+                .x(request.isSlim() ? -1.375f : -1.5f).y(2.5f)
+                .scale(request.isSlim() ? 0.425f : 0.55f, 1.55f, 0.55f)
+                .rotX(request.getLegRotation())
+                .rotZ(10f)
+                .texture(mirror, request.isSlim() ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
+                .depthMask(false)
+                .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                .addTo(group);
+
+        // left leg
+        PrimitiveBuilder.cube()
+                .x(0.5f).y(5.5f)
+                .rotX(request.getLegRotation())
+                .scale(0.5f, 1.5f, 0.5f)
+                .anchorY(-1.5f)
+                .texture(mirror, TextureType.LLEG)
+                .addTo(group2);
+        PrimitiveBuilder.cube()
+                .x(0.5f).y(5.5f)
+                .rotX(request.getLegRotation())
+                .scale(0.55f, 1.55f, 0.55f)
+                .anchorY(-1.55f)
+                .texture(mirror, TextureType.LLEG_OVERLAY)
+                .depthMask(false)
+                .addTo(group2);
+
+        // right leg
+        PrimitiveBuilder.cube()
+                .x(-0.5f).y(5.5f)
+                .rotX(-request.getLegRotation())
+                .scale(0.5f, 1.5f, 0.5f)
+                .anchorY(-1.5f)
+                .texture(mirror, TextureType.RLEG)
+                .addTo(group2);
+        PrimitiveBuilder.cube()
+                .x(-0.5f).y(5.5f)
+                .rotX(-request.getLegRotation())
+                .scale(0.55f, 1.55f, 0.55f)
+                .anchorY(-1.55f)
+                .texture(mirror, TextureType.RLEG_OVERLAY)
+                .depthMask(false)
+                .addTo(group2);
+    }
+
+}
