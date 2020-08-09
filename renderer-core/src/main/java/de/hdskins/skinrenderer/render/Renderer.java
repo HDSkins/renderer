@@ -26,9 +26,9 @@ package de.hdskins.skinrenderer.render;
 
 import com.google.common.collect.Lists;
 import de.hdskins.skinrenderer.RenderContext;
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.Vertices;
 import de.hdskins.skinrenderer.render.primitive.Primitive;
+import de.hdskins.skinrenderer.request.RenderRequest;
 import org.lwjgl.BufferUtils;
 
 import java.awt.image.BufferedImage;
@@ -50,6 +50,7 @@ public abstract class Renderer {
     public RenderContext owner;
 
     private RenderRequest request;
+    private boolean back;
 
     public int cubeVbo;
 
@@ -71,7 +72,7 @@ public abstract class Renderer {
         this.initGL(width, height);
         this.preRender(width, height);
         for (Primitive primitive : this.primitives) {
-            primitive.render(this.request, this);
+            primitive.render(this.request, this.back, this);
         }
         this.postRender(width, height);
     }
@@ -81,13 +82,13 @@ public abstract class Renderer {
         this.initialized = false;
     }
 
-    public void init(RenderRequest request) {
+    public void init(RenderRequest request, boolean back) {
         if (!this.initialized) {
             IntBuffer ids = BufferUtils.createIntBuffer(1);
             glGenBuffers(ids);
             this.cubeVbo = ids.get();
 
-            float[] vertices = request.isBack() ? Vertices.BACK_VERTICES : Vertices.FRONT_VERTICES;
+            float[] vertices = back ? Vertices.BACK_VERTICES : Vertices.FRONT_VERTICES;
             FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
             vertexBuffer.put(vertices);
             vertexBuffer.flip();
@@ -96,7 +97,8 @@ public abstract class Renderer {
         }
 
         this.request = request;
-        this.initPrimitives(request);
+        this.back = back;
+        this.initPrimitives(request, back);
         this.initialized = true;
     }
 
@@ -104,7 +106,7 @@ public abstract class Renderer {
         return this.initialized;
     }
 
-    protected abstract void initPrimitives(RenderRequest request);
+    protected abstract void initPrimitives(RenderRequest request, boolean back);
 
     protected void initGL(float width, float height) {
         glMatrixMode(GL_PROJECTION);

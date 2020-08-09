@@ -26,6 +26,7 @@
         <module>renderer-server</module>
         <module>renderer-client</module>
         <module>renderer-shared</module>
+        <module>renderer-common</module>
     </modules>
 
     <repositories>

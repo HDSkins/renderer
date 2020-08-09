@@ -5,9 +5,9 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import de.hdskins.skinrenderer.client.rabbitmq.ClientRabbitMQConsumer;
+import de.hdskins.skinrenderer.request.RenderRequest;
 import de.hdskins.skinrenderer.shared.RabbitMQConnector;
 
-import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
-public class SkinRenderClient extends Thread implements AutoCloseable {
+public final class SkinRenderClient extends Thread implements AutoCloseable {
 
     private final Map<String, CompletableFuture<RenderResponse>> pendingJobs = new ConcurrentHashMap<>();
 
@@ -29,7 +29,7 @@ public class SkinRenderClient extends Thread implements AutoCloseable {
 
     private boolean running = true;
 
-    public SkinRenderClient(ConnectionFactory factory, String queue) {
+    private SkinRenderClient(ConnectionFactory factory, String queue) {
         this.factory = factory;
         this.queue = queue;
     }
@@ -38,30 +38,21 @@ public class SkinRenderClient extends Thread implements AutoCloseable {
         return new SkinRenderClient(connector.createFactory(), queue);
     }
 
-    public void render(RenderRequest request) throws IOException {
+    public CompletableFuture<RenderResponse> render(RenderRequest request) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream outputStream = new DataOutputStream(byteArrayOutputStream);
 
-        outputStream.writeByte(request.getMode().ordinal());
-        outputStream.writeInt(request.getWidth());
-        outputStream.writeInt(request.getHeight());
-
-        ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
-        ImageIO.write(request.getImage(), "PNG", imageStream);
-        outputStream.writeInt(imageStream.size());
-        outputStream.write(imageStream.toByteArray());
-
-        outputStream.writeInt(request.getRotationX());
-        outputStream.writeInt(request.getRotationY());
-        outputStream.writeInt(request.getLegRotation());
-        outputStream.writeBoolean(request.isFlipped());
-        outputStream.writeBoolean(request.isSlim());
+        request.write(outputStream);
 
         String correlationId = UUID.randomUUID().toString();
         AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlationId).replyTo(this.replyQueue).build();
 
-        this.pendingJobs.put(correlationId, request.getFuture());
+        CompletableFuture<RenderResponse> future = new CompletableFuture<>();
+
+        this.pendingJobs.put(correlationId, future);
         this.channel.basicPublish("", this.queue, properties, byteArrayOutputStream.toByteArray());
+
+        return future;
     }
 
     @Override

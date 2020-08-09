@@ -39,7 +39,7 @@ public class SkinRenderServer extends Thread implements AutoCloseable {
         this.queue = queue;
     }
 
-    public static SkinRenderServer create(String name, String queue, int priority, RabbitMQConnector connector, int renderers) throws IOException, TimeoutException {
+    public static SkinRenderServer create(String name, String queue, int priority, RabbitMQConnector connector, int renderers) {
         Preconditions.checkArgument(renderers > 0, "Must be at least 1 renderer");
 
         SkinRenderServer server = new SkinRenderServer(name, priority, connector.createFactory(), queue);

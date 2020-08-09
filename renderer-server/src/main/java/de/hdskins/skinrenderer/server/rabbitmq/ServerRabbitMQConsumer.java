@@ -4,9 +4,9 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownSignalException;
+import de.hdskins.skinrenderer.CompletableRenderRequest;
 import de.hdskins.skinrenderer.RenderContext;
-import de.hdskins.skinrenderer.RenderMode;
-import de.hdskins.skinrenderer.RenderRequest;
+import de.hdskins.skinrenderer.request.RenderRequest;
 import de.hdskins.skinrenderer.server.SkinRenderServer;
 import de.hdskins.skinrenderer.shared.RabbitMQConsumer;
 
@@ -37,27 +37,15 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
     @Override
     public void handleDelivery0(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         RenderContext context = this.server.nextRenderer();
-        RenderRequest request = this.createRequest(envelope, properties, body);
+        CompletableRenderRequest request = this.createRequest(envelope, properties, body);
 
         context.queueRequest(request);
     }
 
-    private RenderRequest createRequest(Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+    private CompletableRenderRequest createRequest(Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(body));
 
-        RenderMode mode = RenderMode.values()[inputStream.readByte()];
-        int width = inputStream.readInt();
-        int height = inputStream.readInt();
-
-        byte[] imageBytes = new byte[inputStream.readInt()];
-        inputStream.readFully(imageBytes);
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
-
-        int rotationX = inputStream.readInt();
-        int rotationY = inputStream.readInt();
-        int legRotation = inputStream.readInt();
-        boolean flipped = inputStream.readBoolean();
-        boolean slim = inputStream.readBoolean();
+        RenderRequest request = RenderRequest.read(inputStream);
 
         CompletableFuture<BufferedImage> future = new CompletableFuture<>();
 
@@ -68,6 +56,7 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
                 exception.printStackTrace();
             }
         }).exceptionally(throwable -> {
+            throwable.printStackTrace();
             try {
                 this.sendResponse(envelope, properties, this.createResponse(throwable));
             } catch (IOException exception) {
@@ -76,7 +65,7 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
             return null;
         });
 
-        return new RenderRequest(mode, width, height, image, rotationX, rotationY, legRotation, flipped, slim, future);
+        return new CompletableRenderRequest(request, future);
     }
 
     private void sendResponse(Envelope envelope, AMQP.BasicProperties properties, byte[] response) {

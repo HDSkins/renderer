@@ -25,8 +25,8 @@
 package de.hdskins.skinrenderer.render.primitive;
 
 import com.google.common.collect.Lists;
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.render.Renderer;
+import de.hdskins.skinrenderer.request.RenderRequest;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class Group extends Primitive {
     public final List<Primitive> members = Lists.newArrayList();
 
     @Override
-    public void render(RenderRequest request, Renderer renderer) {
+    public void render(RenderRequest request, boolean back, Renderer renderer) {
         GL11.glPushMatrix();
         GL11.glTranslatef(this.x, this.y, this.z);
         GL11.glRotatef(this.rotX, 1.0f, 0.0f, 0.0f);
@@ -52,7 +52,7 @@ public class Group extends Primitive {
 
         for (Primitive p : this.members) {
             p.inStage = true;
-            p.render(request, renderer);
+            p.render(request, back, renderer);
         }
 
         GL11.glPopMatrix();

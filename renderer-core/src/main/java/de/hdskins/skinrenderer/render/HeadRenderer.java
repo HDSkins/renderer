@@ -25,9 +25,11 @@
 package de.hdskins.skinrenderer.render;
 
 import de.hdskins.skinrenderer.RenderContext;
-import de.hdskins.skinrenderer.RenderRequest;
+import de.hdskins.skinrenderer.RenderRotation;
 import de.hdskins.skinrenderer.render.primitive.Group;
 import de.hdskins.skinrenderer.render.primitive.PrimitiveBuilder;
+import de.hdskins.skinrenderer.request.RenderRequest;
+import de.hdskins.skinrenderer.request.RenderRequestProperties;
 
 public class HeadRenderer extends Renderer {
 
@@ -36,9 +38,10 @@ public class HeadRenderer extends Renderer {
     }
 
     @Override
-    protected void initPrimitives(RenderRequest request) {
-        float tilt = request.getRotationY();
-        float angle = request.getRotationX();
+    protected void initPrimitives(RenderRequest request, boolean back) {
+        RenderRotation rotation = request.getProperty(RenderRequestProperties.ROTATION);
+        float tilt = rotation.getY();
+        float angle = rotation.getX();
 
         Group group = PrimitiveBuilder.group()
                 .y(-0.25f).z(-5f)
@@ -57,11 +60,11 @@ public class HeadRenderer extends Renderer {
         PrimitiveBuilder.cube()
                 .y(-0.025f).z(-0.025f)
                 .texture(TextureType.HEAD)
-                .executeIf(request.isFlipped(), builder -> builder.rotZ(180))
+                .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180))
                 .addTo(group);
         PrimitiveBuilder.cube()
                 .scale(1.05f)
-                .executeIf(request.isFlipped(), builder -> builder.rotZ(180f))
+                .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180f))
                 .texture(TextureType.HEAD_OVERLAY)
                 .depthMask(false)
                 .addTo(group);

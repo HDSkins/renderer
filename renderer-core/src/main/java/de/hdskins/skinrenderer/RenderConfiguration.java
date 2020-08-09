@@ -51,40 +51,28 @@ public final class RenderConfiguration {
         }
     }
 
-    private final RenderRequest request;
+    private final CompletableRenderRequest request;
 
-    public RenderConfiguration(RenderRequest request) {
+    public RenderConfiguration(CompletableRenderRequest request) {
         this.request = request;
     }
 
     public Renderer createRenderer(RenderContext owner) {
-        Class<? extends Renderer> rendererClass = RENDERER_REGISTRY.get(this.request.getMode());
+        Class<? extends Renderer> rendererClass = RENDERER_REGISTRY.get(this.request.getRequest().getMode());
         if (rendererClass == null) {
-            throw new IllegalArgumentException("Missing renderer for " + this.request.getMode());
+            throw new IllegalArgumentException("Missing renderer for " + this.request.getRequest().getMode());
         }
 
         Renderer renderer = null;
 
         try {
             renderer = rendererClass.getDeclaredConstructor(RenderContext.class).newInstance(owner);
-            renderer.init(this.request);
+            renderer.init(this.request.getRequest(), this.request.isBack());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
             exception.printStackTrace();
         }
 
         return renderer;
-    }
-
-    public RenderMode getMode() {
-        return this.request.getMode();
-    }
-
-    public boolean isSlim() {
-        return this.request.isSlim();
-    }
-
-    public boolean isFull() {
-        return this.request.isFull();
     }
 
     @Override

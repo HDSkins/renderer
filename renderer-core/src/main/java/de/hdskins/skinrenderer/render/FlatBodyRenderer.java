@@ -25,9 +25,10 @@
 package de.hdskins.skinrenderer.render;
 
 import de.hdskins.skinrenderer.RenderContext;
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.render.primitive.Group;
 import de.hdskins.skinrenderer.render.primitive.PrimitiveBuilder;
+import de.hdskins.skinrenderer.request.RenderRequest;
+import de.hdskins.skinrenderer.request.RenderRequestProperties;
 
 public class FlatBodyRenderer extends Renderer {
 
@@ -36,14 +37,17 @@ public class FlatBodyRenderer extends Renderer {
     }
 
     @Override
-    protected void initPrimitives(RenderRequest request) {
+    protected void initPrimitives(RenderRequest request, boolean back) {
+        boolean flipped = request.getProperty(RenderRequestProperties.FLIPPED);
+        boolean slim = request.getProperty(RenderRequestProperties.SLIM);
+
         Group group = PrimitiveBuilder.group()
                 .executeIf(
                         request.isFull(),
-                        builder -> builder.y(request.isFlipped() ? 1.5f : -1.5f).z(-9.75f),
-                        builder -> builder.y(request.isFlipped() ? 0.04f : -0.04f).z(-6.25f)
+                        builder -> builder.y(flipped ? 1.5f : -1.5f).z(-9.75f),
+                        builder -> builder.y(flipped ? 0.04f : -0.04f).z(-6.25f)
                 )
-                .rotZ(0).rotY(request.isFlipped() ? 180 : 0).rotX(request.getRotationX())
+                .rotZ(0).rotY(flipped ? 180 : 0).rotX(request.getProperty(RenderRequestProperties.ROTATION).getX())
                 .lit(false)
                 .addTo(this);
 
@@ -74,27 +78,27 @@ public class FlatBodyRenderer extends Renderer {
 
         // right arm
         PrimitiveBuilder.plane()
-                .x(request.isSlim() ? -1.375f : -1.5f).z(1f)
-                .scaleX(request.isSlim() ? 0.375f : 0.5f).scaleZ(1.5f)
-                .texture(request.isSlim() ? TextureType.RARM_SLIM_FRONT : TextureType.RARM_FRONT)
+                .x(slim ? -1.375f : -1.5f).z(1f)
+                .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
+                .texture(slim ? TextureType.RARM_SLIM_FRONT : TextureType.RARM_FRONT)
                 .addTo(group);
         PrimitiveBuilder.plane()
-                .x(request.isSlim() ? -1.375f : -1.5f).z(0.9999f)
-                .scaleX(request.isSlim() ? 0.425f : 0.55f).scaleZ(1.55f)
-                .texture(request.isSlim() ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
+                .x(slim ? -1.375f : -1.5f).z(0.9999f)
+                .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
+                .texture(slim ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
                 .depthMask(false)
                 .addTo(group);
 
         // left arm
         PrimitiveBuilder.plane()
-                .x(request.isSlim() ? 1.375f : 1.5f).z(1f)
-                .scaleX(request.isSlim() ? 0.375f : 0.5f).scaleZ(1.5f)
-                .texture(request.isSlim() ? TextureType.LARM_SLIM_FRONT : TextureType.LARM_FRONT)
+                .x(slim ? 1.375f : 1.5f).z(1f)
+                .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
+                .texture(slim ? TextureType.LARM_SLIM_FRONT : TextureType.LARM_FRONT)
                 .addTo(group);
         PrimitiveBuilder.plane()
-                .x(request.isSlim() ? 1.375f : 1.5f).z(0.9999f)
-                .scaleX(request.isSlim() ? 0.425f : 0.55f).scaleZ(1.55f)
-                .texture(request.isSlim() ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
+                .x(slim ? 1.375f : 1.5f).z(0.9999f)
+                .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
+                .texture(slim ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
                 .depthMask(false)
                 .addTo(group);
 

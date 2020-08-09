@@ -1,7 +1,6 @@
 package de.hdskins.skinrenderer.render.primitive;
-
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.render.Renderer;
+import de.hdskins.skinrenderer.request.RenderRequest;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -14,10 +13,10 @@ public abstract class PrimitiveObject extends Primitive {
 
     protected abstract int vbo(Renderer renderer);
 
-    protected abstract float[] vertices(RenderRequest request, Renderer renderer);
+    protected abstract float[] vertices(RenderRequest request, boolean back, Renderer renderer);
 
     @Override
-    public void render(RenderRequest request, Renderer renderer) {
+    public void render(RenderRequest request, boolean back, Renderer renderer) {
         if (this.tcbo == Integer.MAX_VALUE) {
             this.tcbo = glGenBuffers();
             FloatBuffer uv = BufferUtils.createFloatBuffer(this.texture.u.length + this.texture.v.length);
@@ -29,6 +28,6 @@ public abstract class PrimitiveObject extends Primitive {
             glBindBuffer(GL_ARRAY_BUFFER, this.tcbo);
             glBufferData(GL_ARRAY_BUFFER, uv, GL_STATIC_DRAW);
         }
-        this.doRender(renderer, this.vbo(renderer), this.tcbo, this.vertices(request, renderer));
+        this.doRender(renderer, this.vbo(renderer), this.tcbo, this.vertices(request, back, renderer));
     }
 }

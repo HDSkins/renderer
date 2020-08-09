@@ -23,10 +23,9 @@
  */
 
 package de.hdskins.skinrenderer.render.primitive;
-
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.Vertices;
 import de.hdskins.skinrenderer.render.Renderer;
+import de.hdskins.skinrenderer.request.RenderRequest;
 
 public class Cube extends PrimitiveObject {
 
@@ -36,8 +35,8 @@ public class Cube extends PrimitiveObject {
     }
 
     @Override
-    protected float[] vertices(RenderRequest request, Renderer renderer) {
-        return request.isBack() ? Vertices.BACK_VERTICES : Vertices.FRONT_VERTICES;
+    protected float[] vertices(RenderRequest request, boolean back, Renderer renderer) {
+        return back ? Vertices.BACK_VERTICES : Vertices.FRONT_VERTICES;
     }
 
 }

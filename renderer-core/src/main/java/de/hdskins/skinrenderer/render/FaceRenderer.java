@@ -25,9 +25,10 @@
 package de.hdskins.skinrenderer.render;
 
 import de.hdskins.skinrenderer.RenderContext;
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.render.primitive.Group;
 import de.hdskins.skinrenderer.render.primitive.PrimitiveBuilder;
+import de.hdskins.skinrenderer.request.RenderRequest;
+import de.hdskins.skinrenderer.request.RenderRequestProperties;
 
 public class FaceRenderer extends Renderer {
 
@@ -36,11 +37,11 @@ public class FaceRenderer extends Renderer {
     }
 
     @Override
-    protected void initPrimitives(RenderRequest request) {
+    protected void initPrimitives(RenderRequest request, boolean back) {
 
         Group group = PrimitiveBuilder.group()
                 .y(0).z(-2.5f)
-                .rotX(-90).rotY(request.isFlipped() ? 180 : 0).rotZ(0)
+                .rotX(-90).rotY(request.getProperty(RenderRequestProperties.FLIPPED) ? 180 : 0).rotZ(0)
                 .lit(false)
                 .addTo(this);
 

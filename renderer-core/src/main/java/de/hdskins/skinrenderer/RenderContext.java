@@ -28,6 +28,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import de.hdskins.skinrenderer.render.Renderer;
+import de.hdskins.skinrenderer.request.RenderRequestProperties;
 import de.hdskins.skinrenderer.util.Textures;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
@@ -83,7 +84,7 @@ public class RenderContext extends Thread implements AutoCloseable {
     private final Map<RenderConfiguration, Renderer> renderers = Maps.newHashMap();
     private boolean run = true;
 
-    private final BlockingDeque<RenderRequest> requestQueue = new LinkedBlockingDeque<>();
+    private final BlockingDeque<CompletableRenderRequest> requestQueue = new LinkedBlockingDeque<>();
 
     private final boolean requiresInitialization;
     private long window;
@@ -281,11 +282,11 @@ public class RenderContext extends Thread implements AutoCloseable {
         glShadeModel(GL_SMOOTH);
     }
 
-    public void queueRequest(RenderRequest request) {
+    public void queueRequest(CompletableRenderRequest request) {
         this.requestQueue.add(request);
     }
 
-    private void processRequestSafe(RenderRequest request) {
+    private void processRequestSafe(CompletableRenderRequest request) {
         try {
             this.processRequest(request);
         } catch (Exception e) {
@@ -295,13 +296,17 @@ public class RenderContext extends Thread implements AutoCloseable {
         }
     }
 
-    private void processRequest(RenderRequest request) {
+    private void processRequest(CompletableRenderRequest request) {
         RenderConfiguration config = new RenderConfiguration(request);
 
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        BufferedImage output = this.draw(config, request.getWidth(), request.getHeight(), request.getImage());
+        BufferedImage output = this.draw(config,
+                request.getRequest().getProperty(RenderRequestProperties.WIDTH),
+                request.getRequest().getProperty(RenderRequestProperties.HEIGHT),
+                request.getRequest().getProperty(RenderRequestProperties.IMAGE)
+        );
 
         request.getFuture().complete(output);
     }

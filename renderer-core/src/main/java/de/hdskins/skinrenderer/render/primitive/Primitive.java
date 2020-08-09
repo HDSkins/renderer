@@ -24,9 +24,9 @@
 
 package de.hdskins.skinrenderer.render.primitive;
 
-import de.hdskins.skinrenderer.RenderRequest;
 import de.hdskins.skinrenderer.render.Renderer;
 import de.hdskins.skinrenderer.render.TextureType;
+import de.hdskins.skinrenderer.request.RenderRequest;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -49,7 +49,7 @@ public abstract class Primitive {
 
     public boolean depthMask = true;
 
-    public abstract void render(RenderRequest request, Renderer renderer);
+    public abstract void render(RenderRequest request, boolean back, Renderer renderer);
 
     protected void doRender(Renderer renderer, int vbo, int tcbo, float[] vertices) {
         glPushMatrix();
