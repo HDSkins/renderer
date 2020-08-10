@@ -48,13 +48,15 @@ public class HeadRenderer extends Renderer {
                 .rotX(tilt).rotY(angle)
                 .addTo(this);
 
-        // shadow
-        PrimitiveBuilder.plane()
-                .y(1)
-                .scaleX(1.95f).scaleZ(1.95f)
-                .texture(TextureType.ALL)
-                .lit(false)
-                .addTo(group);
+        if (request.getProperty(RenderRequestProperties.SHADOW)) {
+            // shadow
+            PrimitiveBuilder.plane()
+                    .y(1)
+                    .scaleX(1.95f).scaleZ(1.95f)
+                    .texture(TextureType.ALL)
+                    .lit(false)
+                    .addTo(group);
+        }
 
         // head
         PrimitiveBuilder.cube()

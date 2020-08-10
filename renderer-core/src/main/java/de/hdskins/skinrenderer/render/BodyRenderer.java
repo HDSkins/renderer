@@ -51,7 +51,8 @@ public class BodyRenderer extends Renderer {
                 .primitive();
         this.addPrimitive(group);
 
-        if (request.isFull() || flipped) {
+        if ((request.isFull() || flipped) && request.getProperty(RenderRequestProperties.SHADOW)) {
+            // shadow
             PrimitiveBuilder.plane()
                     .y(request.isFull() ? (flipped ? 6.825f : 7f) : 2.85f)
                     .scaleX(1.85f).scaleZ(flipped ? 1.85f : 0.85f)

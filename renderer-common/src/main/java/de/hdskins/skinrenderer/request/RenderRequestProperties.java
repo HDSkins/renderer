@@ -45,6 +45,7 @@ public class RenderRequestProperties {
 
     public static final RenderRequestProperty<Boolean> FLIPPED = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
     public static final RenderRequestProperty<Boolean> SLIM = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.FULL, RenderMode.BUST, RenderMode.FRONT, RenderMode.FRONT_FULL);
+    public static final RenderRequestProperty<Boolean> SHADOW = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.FULL, RenderMode.BUST, RenderMode.HEAD);
 
     public static int getNextId() {
         return currentId++;
