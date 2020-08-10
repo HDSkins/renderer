@@ -27,7 +27,6 @@ package de.hdskins.skinrenderer.render;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-// TODO HD Skins are not rendered in HD but just like normal skins
 public enum TextureType {
 
     NONE,
