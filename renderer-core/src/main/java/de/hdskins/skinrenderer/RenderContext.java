@@ -25,7 +25,6 @@
 package de.hdskins.skinrenderer;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import de.hdskins.skinrenderer.render.Renderer;
 import de.hdskins.skinrenderer.request.RenderRequestProperties;
@@ -38,7 +37,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -80,7 +78,6 @@ public class RenderContext extends Thread implements AutoCloseable {
 
     public int textureFilterProgram;
 
-    private final Map<RenderConfiguration, Renderer> renderers = Maps.newHashMap();
     private boolean run = true;
 
     private final BlockingDeque<CompletableRenderRequest> requestQueue = new LinkedBlockingDeque<>();
@@ -115,9 +112,6 @@ public class RenderContext extends Thread implements AutoCloseable {
                 if (this.requiresInitialization) {
                     glfwDestroyWindow(this.window);
                 }
-
-                this.renderers.values().forEach(Renderer::destroy);
-                this.renderers.clear();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -314,10 +308,7 @@ public class RenderContext extends Thread implements AutoCloseable {
             image.setRGB(32, 0, 32, 16, new int[(legacy ? image.getHeight() : image.getHeight() / 2) * image.getWidth()], 0, 32);
         }
 
-        if (!this.renderers.containsKey(conf)) {
-            this.renderers.put(conf, conf.createRenderer(this));
-        }
-        Renderer renderer = this.renderers.get(conf);
+        Renderer renderer = conf.createRenderer(this);
 
         renderer.initSkinFbo(image.getWidth(), image.getHeight());
 
@@ -397,6 +388,7 @@ public class RenderContext extends Thread implements AutoCloseable {
             out = renderer.readPixels(width, height);
         } finally {
             renderer.finish();
+            renderer.destroy();
         }
 
         return out;
