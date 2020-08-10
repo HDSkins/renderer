@@ -77,7 +77,6 @@ public class RenderContext extends Thread implements AutoCloseable {
     public int planeVbo, skinTexture, shadowTexture, skinUnderlayTexture;
 
     public int fbo, swapFbo, swapFboTex;
-    public int skinFbo, skinFboTex;
 
     public int textureFilterProgram;
 
@@ -158,11 +157,10 @@ public class RenderContext extends Thread implements AutoCloseable {
         glGenBuffers(ids);
         this.planeVbo = ids.get();
 
-        IntBuffer textures = BufferUtils.createIntBuffer(5);
+        IntBuffer textures = BufferUtils.createIntBuffer(4);
         glGenTextures(textures);
         this.skinTexture = textures.get();
         this.shadowTexture = textures.get();
-        this.skinFboTex = textures.get();
         this.skinUnderlayTexture = textures.get();
         this.swapFboTex = textures.get();
 
@@ -175,13 +173,6 @@ public class RenderContext extends Thread implements AutoCloseable {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         Textures.upload(skinUnderlay, GL_RGBA8, this.skinUnderlayTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        glBindTexture(GL_TEXTURE_2D, this.skinFboTex);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -208,14 +199,6 @@ public class RenderContext extends Thread implements AutoCloseable {
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color);
 
-        this.skinFbo = glGenFramebuffers();
-
-        glBindFramebuffer(GL_FRAMEBUFFER, this.skinFbo);
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.skinFboTex, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
         this.swapFbo = glGenFramebuffers();
 
         glBindFramebuffer(GL_FRAMEBUFFER, this.swapFbo);
@@ -223,7 +206,6 @@ public class RenderContext extends Thread implements AutoCloseable {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.swapFboTex, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
         this.textureFilterProgram = glCreateProgram();
 
@@ -312,6 +294,8 @@ public class RenderContext extends Thread implements AutoCloseable {
     }
 
     public BufferedImage draw(RenderConfiguration conf, int width, int height, BufferedImage image) {
+        boolean legacy = image.getHeight() == image.getWidth() / 2;
+
         //BufferedImage cape;
         BufferedImage out;
         int color = image.getRGB(32, 8);
@@ -327,26 +311,29 @@ public class RenderContext extends Thread implements AutoCloseable {
             }
         }
         if (equal) {
-            image.setRGB(32, 0, 32, 16, new int[32 * 64], 0, 32);
+            image.setRGB(32, 0, 32, 16, new int[(legacy ? image.getHeight() : image.getHeight() / 2) * image.getWidth()], 0, 32);
         }
 
         if (!this.renderers.containsKey(conf)) {
             this.renderers.put(conf, conf.createRenderer(this));
         }
         Renderer renderer = this.renderers.get(conf);
+
+        renderer.initSkinFbo(image.getWidth(), image.getHeight());
+
         try {
             Textures.upload(image, GL_RGBA8, this.skinTexture);
 
             glUseProgram(0);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, this.skinFbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, renderer.skinFbo);
             glClearColor(0, 0, 0, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glViewport(0, 0, 64, 64);
-            glOrtho(0, 64, 0, 64, -1, 1);
+            glViewport(0, 0, image.getHeight(), image.getHeight());
+            glOrtho(0, image.getHeight(), 0, image.getHeight(), -1, 1);
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
@@ -362,15 +349,15 @@ public class RenderContext extends Thread implements AutoCloseable {
             glDisable(GL_CULL_FACE);
 
             glBindTexture(GL_TEXTURE_2D, this.skinUnderlayTexture);
-            this.drawQuad(0, 0, 64, 64);
+            this.drawQuad(0, 0, image.getHeight(), image.getWidth());
 
             glBindTexture(GL_TEXTURE_2D, this.skinTexture);
-            if (image.getHeight() == 32) {
-                this.drawQuad(0, 0, 64, 32);
-                this.drawFlippedLimb(16, 48, 0, 16);
-                this.drawFlippedLimb(32, 48, 40, 16);
+            if (legacy) {
+                this.drawQuad(0, 0, image.getWidth(), image.getHeight());
+                this.drawFlippedLimb(image.getWidth() / 4, (int) ((double) image.getHeight() * 0.75), 0, 16);
+                this.drawFlippedLimb(image.getWidth() / 2, (int) ((double) image.getHeight() * 0.75), 40, 16);
             } else {
-                this.drawQuad(0, 0, 64, 64);
+                this.drawQuad(0, 0, image.getWidth(), image.getHeight());
             }
 
 

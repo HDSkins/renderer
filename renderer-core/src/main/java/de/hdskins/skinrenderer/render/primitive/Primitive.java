@@ -76,7 +76,7 @@ public abstract class Primitive {
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             } else {
-                glBindTexture(GL_TEXTURE_2D, renderer.owner.skinFboTex);
+                glBindTexture(GL_TEXTURE_2D, renderer.skinFboTex);
                 glUseProgram(renderer.owner.textureFilterProgram);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

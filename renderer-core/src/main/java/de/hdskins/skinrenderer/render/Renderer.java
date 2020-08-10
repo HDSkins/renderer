@@ -40,6 +40,8 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_BGRA;
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public abstract class Renderer {
 
@@ -52,6 +54,7 @@ public abstract class Renderer {
     private RenderRequest request;
     private boolean back;
 
+    public int skinFbo, skinFboTex;
     public int cubeVbo;
 
     public Renderer(RenderContext owner) {
@@ -66,6 +69,24 @@ public abstract class Renderer {
     }
 
     protected void postRender(int width, int height) {
+    }
+
+    public void initSkinFbo(int width, int height) {
+        this.skinFboTex = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, this.skinFboTex);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        this.skinFbo = glGenFramebuffers();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, this.skinFbo);
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.skinFboTex, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public void render(int width, int height) {
@@ -131,6 +152,8 @@ public abstract class Renderer {
     }
 
     public void finish() {
+        glDeleteTextures(this.skinFboTex);
+        glDeleteFramebuffers(this.skinFbo);
     }
 
     public BufferedImage readPixels(int width, int height) {
