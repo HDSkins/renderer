@@ -21,7 +21,7 @@ For the usage without a RabbitMQ Server, you'll just need the following dependen
 ```xml
         <dependency>
             <groupId>de.hdskins</groupId>
-            <artifactId>renderer-client</artifactId>
+            <artifactId>renderer-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 ```
