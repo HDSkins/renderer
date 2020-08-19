@@ -1,1 +1,0 @@
-This project is a fork of the wonderful project https://github.com/unascribed-archive/Visage by Una Thompson (Copyright holder) which is licensed under the MIT license.
