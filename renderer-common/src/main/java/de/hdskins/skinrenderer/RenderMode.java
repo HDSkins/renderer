@@ -28,7 +28,7 @@ public enum RenderMode {
 
     FACE(256, 256, -90, 0),
     FRONT(256, 256, -90, 0),
-    FRONT_FULL(256, 256, -90, 0),
+    FRONT_FULL(256, 256, -90, 0), // TODO this sometimes doesn't work properly
 
     HEAD(256, 256, -35, -20),
     BUST(256, 256, 20, -10),
