@@ -8,7 +8,7 @@ can send render requests to the servers.
 The clients can use the following dependency:
 ```xml
         <dependency>
-            <groupId>de.hdskins</groupId>
+            <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-client</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -20,7 +20,7 @@ Now you'll only need to create a new instance of the SkinRenderClient and you ca
 For the usage without a RabbitMQ Server, you'll just need the following dependency:
 ```xml
         <dependency>
-            <groupId>de.hdskins</groupId>
+            <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
