@@ -280,6 +280,7 @@ public enum TextureType {
     LARM_FRONT_OVERLAY(52, 52, 4, 12),
     LARM_SLIM_FRONT_OVERLAY(52, 52, 3, 12);
 
+    public final int[] rawCoords;
     public final float[] u = new float[24];
     public final float[] v = new float[24];
 
@@ -298,6 +299,7 @@ public enum TextureType {
     }
 
     TextureType() {
+        this.rawCoords = null;
     }
 
     /**
@@ -309,6 +311,8 @@ public enum TextureType {
      * Front, Back, Top, Bottom, Left, Right
      */
     TextureType(int... assorted) {
+        this.rawCoords = assorted;
+
         for (int i = 0; i < assorted.length / 4; i++) {
             int idx = i * 4;
 

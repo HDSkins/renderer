@@ -288,14 +288,17 @@ public class RenderContext extends Thread implements AutoCloseable {
     }
 
     public BufferedImage draw(RenderConfiguration conf, int width, int height, BufferedImage image) {
-        boolean legacy = image.getHeight() == image.getWidth() / 2;
+        float factor = (float) (image.getWidth() / 64D);
 
-        //BufferedImage cape;
+        if (image.getHeight() == image.getWidth() / 2) { // legacy skin
+            image = LegacyFormatter.asNonLegacy(image);
+        }
+
         BufferedImage out;
         int color = image.getRGB(32, 8);
         boolean equal = true;
-        for (int x = 32; x < 64; x++) {
-            for (int y = 0; y < 16; y++) {
+        for (int x = (int) (32 * factor); x < 64 * factor; x++) {
+            for (int y = 0; y < 16 * factor; y++) {
                 if (x < 40 && y < 8) continue;
                 if (x > 54 && y < 8) continue;
                 if (image.getRGB(x, y) != color) {
@@ -305,7 +308,7 @@ public class RenderContext extends Thread implements AutoCloseable {
             }
         }
         if (equal) {
-            image.setRGB(32, 0, 32, 16, new int[(legacy ? image.getHeight() : image.getHeight() / 2) * image.getWidth()], 0, 32);
+            image.setRGB((int) (32 * factor), 0, (int) (32 * factor), (int) (16 * factor), new int[(image.getHeight() / 2) * image.getWidth()], 0, (int) (32 * factor));
         }
 
         Renderer renderer = conf.createRenderer(this);
@@ -323,8 +326,8 @@ public class RenderContext extends Thread implements AutoCloseable {
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glViewport(0, 0, image.getHeight(), image.getHeight());
-            glOrtho(0, image.getHeight(), 0, image.getHeight(), -1, 1);
+            glViewport(0, 0, (int) (64 * factor), (int) (64 * factor));
+            glOrtho(0, (int) (64 * factor), 0, (int) (64 * factor), -1, 1);
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
@@ -340,16 +343,10 @@ public class RenderContext extends Thread implements AutoCloseable {
             glDisable(GL_CULL_FACE);
 
             glBindTexture(GL_TEXTURE_2D, this.skinUnderlayTexture);
-            this.drawQuad(0, 0, image.getHeight(), image.getWidth());
+            this.drawQuad(0, 0, image.getWidth(), image.getWidth());
 
             glBindTexture(GL_TEXTURE_2D, this.skinTexture);
-            if (legacy) {
-                this.drawQuad(0, 0, image.getWidth(), image.getHeight());
-                this.drawFlippedLimb(image.getWidth() / 4, (int) ((double) image.getHeight() * 0.75), 0, 16);
-                this.drawFlippedLimb(image.getWidth() / 2, (int) ((double) image.getHeight() * 0.75), 40, 16);
-            } else {
-                this.drawQuad(0, 0, image.getWidth(), image.getHeight());
-            }
+            drawQuad(0, 0, 64 * factor, 64 * factor);
 
 
             glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
@@ -392,25 +389,6 @@ public class RenderContext extends Thread implements AutoCloseable {
         }
 
         return out;
-    }
-
-    private void drawFlippedLimb(int x, int y, int u, int v) {
-        this.drawFlippedSkinQuad(x + 4, y + 4, u + 4, v + 4, 4, 12);
-        this.drawFlippedSkinQuad(x + 12, y + 4, u + 12, v + 4, 4, 12);
-
-        this.drawFlippedSkinQuad(x + 4, y, u + 4, v, 4, 4);
-        this.drawFlippedSkinQuad(x + 8, y, u + 8, v, 4, 4);
-
-        this.drawSkinQuad(x, y + 4, u + 8, v + 4, 4, 12);
-        this.drawSkinQuad(x + 8, y + 4, u, v + 4, 4, 12);
-    }
-
-    private void drawFlippedSkinQuad(int x, int y, int u, int v, int w, int h) {
-        this.drawQuad(x, y, x + w, y + h, (u + w) / 64f, (v) / 32f, (u) / 64f, (v + h) / 32f);
-    }
-
-    private void drawSkinQuad(int x, int y, int u, int v, int w, int h) {
-        this.drawQuad(x, y, x + w, y + h, (u) / 64f, (v) / 32f, (u + w) / 64f, (v + h) / 32f);
     }
 
     private void drawQuad(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2) {
