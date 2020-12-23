@@ -31,6 +31,7 @@ import de.hdskins.skinrenderer.request.RenderRequestProperties;
 import de.hdskins.skinrenderer.util.Textures;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -122,6 +123,7 @@ public class RenderContext extends Thread implements AutoCloseable {
 
     private void init() throws IOException {
         if (!glfwInit()) {
+            ErrorHandling.checkGLFWError();
             throw new RuntimeException("Failed to initialize GLFW");
         }
 
@@ -135,10 +137,12 @@ public class RenderContext extends Thread implements AutoCloseable {
 
         this.window = glfwCreateWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "Visage v" + Visage.VERSION + " [" + this.getName() + "]", NULL, NULL);
         if (this.window == NULL) {
+            ErrorHandling.checkGLFWError();
             throw new RuntimeException("Failed to create window");
         }
         glfwMakeContextCurrent(this.window);
         GL.createCapabilities();
+        GLUtil.setupDebugMessageCallback();
 
         if (!GL.getCapabilities().OpenGL30) {
             throw new RuntimeException("OpenGL 3.0 is required");
@@ -150,6 +154,7 @@ public class RenderContext extends Thread implements AutoCloseable {
         IntBuffer ids = BufferUtils.createIntBuffer(1);
         glGenBuffers(ids);
         this.planeVbo = ids.get();
+        ErrorHandling.checkGLError();
 
         IntBuffer textures = BufferUtils.createIntBuffer(4);
         glGenTextures(textures);
@@ -157,18 +162,22 @@ public class RenderContext extends Thread implements AutoCloseable {
         this.shadowTexture = textures.get();
         this.skinUnderlayTexture = textures.get();
         this.swapFboTex = textures.get();
+        ErrorHandling.checkGLError();
 
         glBindTexture(GL_TEXTURE_2D, this.skinTexture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        ErrorHandling.checkGLError();
 
         Textures.upload(shadow, GL_RGBA8, this.shadowTexture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        ErrorHandling.checkGLError();
 
         Textures.upload(skinUnderlay, GL_RGBA8, this.skinUnderlayTexture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        ErrorHandling.checkGLError();
 
         glBindTexture(GL_TEXTURE_2D, this.swapFboTex);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -176,6 +185,7 @@ public class RenderContext extends Thread implements AutoCloseable {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, CANVAS_WIDTH, CANVAS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        ErrorHandling.checkGLError();
 
         this.fbo = glGenFramebuffers();
 
@@ -184,11 +194,13 @@ public class RenderContext extends Thread implements AutoCloseable {
 
         glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
 
+        int samples = Math.min(8, glGetInteger(GL_MAX_SAMPLES));
+
         glBindRenderbuffer(GL_RENDERBUFFER, depth);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_DEPTH_COMPONENT24, CANVAS_WIDTH, CANVAS_HEIGHT);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT24, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         glBindRenderbuffer(GL_RENDERBUFFER, color);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGBA8, CANVAS_WIDTH, CANVAS_HEIGHT);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA8, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color);
@@ -216,24 +228,30 @@ public class RenderContext extends Thread implements AutoCloseable {
         glAttachShader(this.textureFilterProgram, textureFilterFS);
 
         glLinkProgram(this.textureFilterProgram);
+        ErrorHandling.checkGLError();
 
         FloatBuffer planeVertexBuffer = BufferUtils.createFloatBuffer(Vertices.PLANE_VERTICES.length);
         planeVertexBuffer.put(Vertices.PLANE_VERTICES);
         planeVertexBuffer.flip();
         glBindBuffer(GL_ARRAY_BUFFER, this.planeVbo);
         glBufferData(GL_ARRAY_BUFFER, planeVertexBuffer, GL_STATIC_DRAW);
+        ErrorHandling.checkGLError();
 
         glClearColor(0, 0, 0, 0);
         glClearDepth(1.0);
+        ErrorHandling.checkGLError();
 
         glShadeModel(GL_SMOOTH);
         glCullFace(GL_BACK);
+        ErrorHandling.checkGLError();
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        ErrorHandling.checkGLError();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        ErrorHandling.checkGLError();
 
         FloatBuffer lightColor = BufferUtils.createFloatBuffer(4);
         lightColor.put(3f);
@@ -256,6 +274,7 @@ public class RenderContext extends Thread implements AutoCloseable {
         glEnable(GL_RESCALE_NORMAL);
         glFrontFace(GL_CW);
         glShadeModel(GL_SMOOTH);
+        ErrorHandling.checkGLError();
     }
 
     public void queueRequest(CompletableRenderRequest request) {
