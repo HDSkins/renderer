@@ -31,23 +31,25 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class Group extends Primitive {
 
     public final List<Primitive> members = Lists.newArrayList();
 
     @Override
     public void render(RenderRequest request, boolean back, Renderer renderer) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(this.x, this.y, this.z);
-        GL11.glRotatef(this.rotX, 1.0f, 0.0f, 0.0f);
-        GL11.glRotatef(this.rotY, 0.0f, 1.0f, 0.0f);
-        GL11.glRotatef(this.rotZ, 0.0f, 0.0f, 1.0f);
-        GL11.glScalef(this.scaleX, this.scaleY, this.scaleZ);
+        glPushMatrix();
+        glTranslatef(this.x, this.y, this.z);
+        glRotatef(this.rotX, 1.0f, 0.0f, 0.0f);
+        glRotatef(this.rotY, 0.0f, 1.0f, 0.0f);
+        glRotatef(this.rotZ, 0.0f, 0.0f, 1.0f);
+        glScalef(this.scaleX, this.scaleY, this.scaleZ);
 
         if (this.lit) {
-            GL11.glEnable(GL11.GL_LIGHTING);
+            glEnable(GL_LIGHTING);
         } else {
-            GL11.glDisable(GL11.GL_LIGHTING);
+            glDisable(GL_LIGHTING);
         }
 
         for (Primitive p : this.members) {
@@ -55,7 +57,7 @@ public class Group extends Primitive {
             p.render(request, back, renderer);
         }
 
-        GL11.glPopMatrix();
+        glPopMatrix();
     }
 
 }
