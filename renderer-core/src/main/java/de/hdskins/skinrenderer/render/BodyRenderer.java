@@ -60,12 +60,7 @@ public class BodyRenderer extends Renderer {
                     .addTo(group);
         }
 
-        Group group2 = new Group();
-        if (flipped) {
-            group2.rotZ = 180;
-            group2.y = ((-group.y) * 2) + (request.isFull() ? 0.3f : -0.25f);
-        }
-        group.members.add(group2);
+        Group group2 = flipped ? PrimitiveBuilder.group().rotZ(180).y(((-group.y) * 2) + (request.isFull() ? 0.3f : -0.25f)).addTo(group) : group;
 
         // head
         PrimitiveBuilder.cube().texture(TextureType.HEAD).addTo(group2);
@@ -111,7 +106,7 @@ public class BodyRenderer extends Renderer {
                 .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
                 .depthMask(false)
                 .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
-                .addTo(group);
+                .addTo(group2);
 
         // left leg
         PrimitiveBuilder.cube()

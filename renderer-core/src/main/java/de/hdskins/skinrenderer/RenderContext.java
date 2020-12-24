@@ -286,9 +286,9 @@ public class RenderContext extends Thread implements AutoCloseable {
     private void processRequestSafe(CompletableRenderRequest request) {
         try {
             this.processRequest(request);
-        } catch (Exception e) {
+        } catch (Throwable throwable) {
             if (!request.getFuture().isDone()) {
-                request.getFuture().completeExceptionally(e);
+                request.getFuture().completeExceptionally(throwable);
             }
         }
     }
@@ -309,6 +309,10 @@ public class RenderContext extends Thread implements AutoCloseable {
     }
 
     public BufferedImage draw(RenderConfiguration conf, int width, int height, BufferedImage image) {
+        if (image == null) {
+            throw new IllegalArgumentException("No image set");
+        }
+
         float factor = (float) (image.getWidth() / 64D);
 
         if (image.getHeight() == image.getWidth() / 2) { // legacy skin

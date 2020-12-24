@@ -66,7 +66,7 @@ public class HeadRenderer extends Renderer {
                 .addTo(group);
         PrimitiveBuilder.cube()
                 .scale(1.05f)
-                .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180f))
+                .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180))
                 .texture(TextureType.HEAD_OVERLAY)
                 .depthMask(false)
                 .addTo(group);
