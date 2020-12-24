@@ -26,13 +26,13 @@ package de.hdskins.skinrenderer;
 
 public enum RenderMode {
 
-    FACE(256, 256, -90, 0),
-    FRONT(256, 256, -90, 0),
-    FRONT_FULL(256, 256, -90, 0), // TODO this sometimes doesn't work properly
+    FACE(256 * 2, 256 * 2, -90, 0),
+    FRONT(256 * 2, 256 * 2, -90, 0), // TODO there are some pixels at the top right leg that shouldn't be there
+    FRONT_FULL(256 * 2, 256 * 2, -90, 0), // TODO this sometimes doesn't work properly
 
-    HEAD(256, 256, -35, -20),
-    BUST(256, 256, 20, -10),
-    FULL(158, 256, 20, -10);
+    HEAD(256 * 2, 256 * 2, -35, -20),
+    BUST(256 * 2, 256 * 2, 20, -10),
+    FULL(158 * 3, 256 * 3, 20, -10);
 
     private final int defaultWidth;
     private final int defaultHeight;
