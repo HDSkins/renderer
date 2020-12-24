@@ -25,6 +25,7 @@
 package de.hdskins.skinrenderer.render;
 
 import com.google.common.collect.Lists;
+import de.hdskins.skinrenderer.ErrorHandling;
 import de.hdskins.skinrenderer.RenderContext;
 import de.hdskins.skinrenderer.Vertices;
 import de.hdskins.skinrenderer.render.primitive.Primitive;
@@ -87,6 +88,7 @@ public abstract class Renderer {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.skinFboTex, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        ErrorHandling.checkFramebufferStatus();
     }
 
     public void render(int width, int height) {

@@ -204,12 +204,14 @@ public class RenderContext extends Thread implements AutoCloseable {
 
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color);
+        ErrorHandling.checkFramebufferStatus();
 
         this.swapFbo = glGenFramebuffers();
 
         glBindFramebuffer(GL_FRAMEBUFFER, this.swapFbo);
         glDrawBuffer(GL_COLOR_ATTACHMENT0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.swapFboTex, 0);
+        ErrorHandling.checkFramebufferStatus();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
