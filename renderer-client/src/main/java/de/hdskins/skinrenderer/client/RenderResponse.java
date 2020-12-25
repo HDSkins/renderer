@@ -8,12 +8,14 @@ public class RenderResponse {
     private final String rendererName;
     private final BufferedImage image;
     private final Throwable throwable;
+    private final long millis;
 
-    public RenderResponse(boolean success, String rendererName, BufferedImage image, Throwable throwable) {
+    public RenderResponse(boolean success, String rendererName, BufferedImage image, Throwable throwable, long millis) {
         this.success = success;
         this.rendererName = rendererName;
         this.image = image;
         this.throwable = throwable;
+        this.millis = millis;
     }
 
     public boolean isSuccess() {
@@ -30,5 +32,9 @@ public class RenderResponse {
 
     public Throwable getThrowable() {
         return this.throwable;
+    }
+
+    public long getMillis() {
+        return this.millis;
     }
 }

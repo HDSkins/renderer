@@ -8,7 +8,10 @@ import de.hdskins.skinrenderer.shared.RabbitMQConsumer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,27 +33,28 @@ public class ClientRabbitMQConsumer extends RabbitMQConsumer {
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
         boolean success = byteArrayInputStream.read() == 1;
-        RenderResponse response;
+
+        String renderer = null;
+        long millis = -1;
+        BufferedImage image = null;
+        Throwable throwable = null;
 
         if (success) {
             try (DataInputStream inputStream = new DataInputStream(byteArrayInputStream)) {
-                String renderer = inputStream.readUTF();
-                BufferedImage image = ImageIO.read(byteArrayInputStream);
-
-                response = new RenderResponse(true, renderer, image, null);
+                renderer = inputStream.readUTF();
+                millis = inputStream.readLong();
+                image = ImageIO.read(byteArrayInputStream);
             }
         } else {
-            String renderer = null;
-            Throwable throwable;
             try (ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream)) {
                 renderer = inputStream.readUTF();
+                millis = inputStream.readLong();
                 throwable = (Throwable) inputStream.readObject();
             } catch (ClassNotFoundException exception) {
                 throwable = exception;
             }
-            response = new RenderResponse(false, renderer, null, throwable);
         }
 
-        future.complete(response);
+        future.complete(new RenderResponse(success, renderer, image, throwable, millis));
     }
 }

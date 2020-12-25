@@ -12,7 +12,12 @@ import de.hdskins.skinrenderer.shared.RabbitMQConsumer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
@@ -43,6 +48,8 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
     }
 
     private CompletableRenderRequest createRequest(Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+        long start = System.currentTimeMillis();
+
         DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(body));
 
         RenderRequest request = RenderRequest.read(inputStream);
@@ -50,15 +57,17 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
         CompletableFuture<BufferedImage> future = new CompletableFuture<>();
 
         future.thenAccept(response -> {
+            long time = System.currentTimeMillis() - start;
             try {
-                this.sendResponse(envelope, properties, this.createResponse(response));
+                this.sendResponse(envelope, properties, this.createResponse(response, time));
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
         }).exceptionally(throwable -> {
+            long time = System.currentTimeMillis() - start;
             throwable.printStackTrace();
             try {
-                this.sendResponse(envelope, properties, this.createResponse(throwable));
+                this.sendResponse(envelope, properties, this.createResponse(throwable, time));
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -79,12 +88,13 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
         }
     }
 
-    private byte[] createResponse(BufferedImage image) throws IOException {
+    private byte[] createResponse(BufferedImage image, long time) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.write(1);
 
         try (DataOutputStream outputStream = new DataOutputStream(byteArrayOutputStream)) {
             outputStream.writeUTF(this.server.getWorkerName());
+            outputStream.writeLong(time);
 
             ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
             ImageIO.write(image, "PNG", imageStream);
@@ -94,12 +104,14 @@ public class ServerRabbitMQConsumer extends RabbitMQConsumer {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private byte[] createResponse(Throwable throwable) throws IOException {
+    private byte[] createResponse(Throwable throwable, long time) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.write(0);
 
         try (ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             outputStream.writeUTF(this.server.getWorkerName());
+            outputStream.writeLong(time);
+
             outputStream.writeObject(throwable);
         }
 
