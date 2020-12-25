@@ -27,7 +27,6 @@ package de.hdskins.skinrenderer.render.primitive;
 import com.google.common.collect.Lists;
 import de.hdskins.skinrenderer.render.Renderer;
 import de.hdskins.skinrenderer.request.RenderRequest;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
