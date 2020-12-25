@@ -10,7 +10,7 @@ The clients can use the following dependency:
         <dependency>
             <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
 ```
 Now you'll only need to create a new instance of the SkinRenderClient and you can send requests.
@@ -22,7 +22,7 @@ For the usage without a RabbitMQ Server, you'll just need the following dependen
         <dependency>
             <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
 ```
 Now you can create a new instance of the RenderContext class and send a request with the queueRequest method.

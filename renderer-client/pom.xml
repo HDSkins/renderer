@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.hdskins.renderer</groupId>
         <artifactId>skin-renderer-root</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.2</version>
     </parent>
 
     <artifactId>renderer-client</artifactId>
@@ -16,14 +16,14 @@
         <dependency>
             <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-shared</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
