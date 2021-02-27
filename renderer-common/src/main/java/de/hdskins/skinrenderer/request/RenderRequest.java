@@ -27,9 +27,18 @@ public class RenderRequest {
         return this.mode.isTall() && this.mode != RenderMode.HEAD && this.mode != RenderMode.FACE;
     }
 
+    public Map<RenderRequestProperty<Object>, Object> getProperties() {
+        return this.properties;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getProperty(RenderRequestProperty<T> property) {
         return (T) this.properties.getOrDefault(property, property.getDefaultValue(this.mode));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> void setProperty(RenderRequestProperty<T> property, T value) {
+        this.properties.put((RenderRequestProperty<Object>) property, value);
     }
 
     public static RenderRequest read(DataInputStream inputStream) throws IOException {
@@ -104,6 +113,10 @@ public class RenderRequest {
             }
             this.properties.put((RenderRequestProperty<Object>) property, value);
             return this;
+        }
+
+        public boolean hasProperty(RenderRequestProperty<?> property) {
+            return this.properties.containsKey(property);
         }
 
         public RenderRequest build() {

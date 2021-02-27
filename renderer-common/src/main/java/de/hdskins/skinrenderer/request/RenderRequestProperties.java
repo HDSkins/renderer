@@ -78,4 +78,7 @@ public class RenderRequestProperties {
         return property;
     }
 
+    public static List<RenderRequestProperty<?>> getProperties() {
+        return PROPERTIES_REGISTRY;
+    }
 }
