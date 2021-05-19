@@ -3,12 +3,20 @@ package de.hdskins.skinrenderer.command;
 import com.github.derrop.simplecommand.map.CommandExecutionResponse;
 import com.github.derrop.simplecommand.map.CommandMap;
 import com.github.derrop.simplecommand.map.DefaultCommandMap;
+import de.hdskins.skinrenderer.CompletableRenderRequest;
 import de.hdskins.skinrenderer.RenderContext;
+import de.hdskins.skinrenderer.request.RenderRequest;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
+
+import java.awt.image.BufferedImage;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public final class SkinRenderCommand {
 
@@ -26,6 +34,12 @@ public final class SkinRenderCommand {
         this.renderContext.start();
 
         commandMap.registerSubCommands(new RenderCommand(this));
+    }
+
+    private BufferedImage test(RenderRequest request) throws InterruptedException, ExecutionException, TimeoutException {
+        CompletableRenderRequest completable = new CompletableRenderRequest(request, new CompletableFuture<>());
+        this.renderContext.queueRequest(completable);
+        return completable.getFuture().get(5, TimeUnit.SECONDS);
     }
 
     public RenderContext getRenderContext() {

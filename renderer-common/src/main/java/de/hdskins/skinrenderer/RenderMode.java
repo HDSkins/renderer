@@ -34,6 +34,10 @@ public enum RenderMode {
     BUST(256 * 2, 256 * 2, 20, -10),
     FULL(158 * 3, 256 * 3, 20, -10);
 
+    private static final RenderMode[] DIMENSION_3 = new RenderMode[]{HEAD, BUST, FULL};
+    private static final RenderMode[] DIMENSION_2 = new RenderMode[]{FACE, FRONT, FRONT_FULL};
+    private static final RenderMode[] BODY = new RenderMode[]{FRONT, FRONT_FULL, BUST, FULL};
+
     private final int defaultWidth;
     private final int defaultHeight;
     private final int defaultRotationX;
@@ -68,5 +72,20 @@ public enum RenderMode {
 
     public boolean is3D() {
         return this == HEAD || this == BUST || this == FULL;
+    }
+
+    public static RenderMode[] body() {
+        return BODY;
+    }
+
+    public static RenderMode[] dimension(int dimension) {
+        switch (dimension) {
+            case 2:
+                return DIMENSION_2;
+            case 3:
+                return DIMENSION_3;
+            default:
+                throw new IllegalStateException("Unknown dimension: " + dimension);
+        }
     }
 }

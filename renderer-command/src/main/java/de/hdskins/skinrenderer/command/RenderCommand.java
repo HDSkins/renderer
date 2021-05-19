@@ -9,6 +9,7 @@ import com.github.derrop.simplecommand.argument.CommandArgumentWrapper;
 import com.github.derrop.simplecommand.argument.DefaultArgumentTypes;
 import com.github.derrop.simplecommand.sender.CommandSender;
 import de.hdskins.skinrenderer.CompletableRenderRequest;
+import de.hdskins.skinrenderer.ImageUtils;
 import de.hdskins.skinrenderer.RenderMode;
 import de.hdskins.skinrenderer.RenderRotation;
 import de.hdskins.skinrenderer.request.RenderRequest;
@@ -64,7 +65,7 @@ public class RenderCommand {
 
         sender.sendMessage("Rendering the skin at " + path.toAbsolutePath() + "...");
 
-        RenderRequest.Builder builder = RenderRequest.builder(mode).withProperty(RenderRequestProperties.IMAGE, image);
+        RenderRequest.Builder builder = RenderRequest.builder(mode).withProperty(RenderRequestProperties.IMAGE, ImageUtils.toByteArray(image));
 
         if (properties.getString("flipped") != null) {
             builder.withProperty(RenderRequestProperties.FLIPPED, properties.getBoolean("flipped"));

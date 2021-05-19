@@ -1,11 +1,9 @@
 package de.hdskins.skinrenderer.request;
 
-import de.hdskins.skinrenderer.ImageUtils;
 import de.hdskins.skinrenderer.RenderMode;
 import de.hdskins.skinrenderer.RenderRotation;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,14 +20,13 @@ public class RenderRequestProperties {
 
     public static final RenderRequestProperty<Integer> WIDTH = simple(RenderMode::getDefaultWidth, DataOutputStream::writeInt, DataInputStream::readInt, RenderMode.values());
     public static final RenderRequestProperty<Integer> HEIGHT = simple(RenderMode::getDefaultHeight, DataOutputStream::writeInt, DataInputStream::readInt, RenderMode.values());
-    public static final RenderRequestProperty<BufferedImage> IMAGE = simple((stream, image) -> {
-        byte[] bytes = ImageUtils.toByteArray(image);
+    public static final RenderRequestProperty<byte[]> IMAGE = simple((stream, bytes) -> {
         stream.writeInt(bytes.length);
         stream.write(bytes);
     }, stream -> {
         byte[] bytes = new byte[stream.readInt()];
         stream.readFully(bytes);
-        return ImageUtils.fromByteArray(bytes);
+        return bytes;
     }, RenderMode.values());
 
     public static final RenderRequestProperty<RenderRotation> ROTATION = simple(
@@ -44,8 +41,8 @@ public class RenderRequestProperties {
     );
 
     public static final RenderRequestProperty<Boolean> FLIPPED = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
-    public static final RenderRequestProperty<Boolean> SLIM = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.FULL, RenderMode.BUST, RenderMode.FRONT, RenderMode.FRONT_FULL);
-    public static final RenderRequestProperty<Boolean> SHADOW = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.FULL, RenderMode.BUST, RenderMode.HEAD);
+    public static final RenderRequestProperty<Boolean> SLIM = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.body());
+    public static final RenderRequestProperty<Boolean> SHADOW = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.dimension(2));
 
     public static int getNextId() {
         return currentId++;

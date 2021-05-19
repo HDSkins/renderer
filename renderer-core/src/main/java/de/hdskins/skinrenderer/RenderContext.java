@@ -299,10 +299,11 @@ public class RenderContext extends Thread implements AutoCloseable {
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        byte[] image = request.getRequest().getProperty(RenderRequestProperties.IMAGE);
         BufferedImage output = this.draw(config,
                 request.getRequest().getProperty(RenderRequestProperties.WIDTH),
                 request.getRequest().getProperty(RenderRequestProperties.HEIGHT),
-                request.getRequest().getProperty(RenderRequestProperties.IMAGE)
+                image == null ? null : ImageUtils.fromByteArray(image)
         );
 
         request.getFuture().complete(output);

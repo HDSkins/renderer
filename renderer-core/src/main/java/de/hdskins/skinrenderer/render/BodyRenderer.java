@@ -60,7 +60,7 @@ public class BodyRenderer extends Renderer {
                     .addTo(group);
         }
 
-        Group group2 = flipped ? PrimitiveBuilder.group().rotZ(180).y(((-group.y) * 2) + (request.isFull() ? 0.3f : -0.25f)).addTo(group) : group;
+        Group group2 = flipped ? PrimitiveBuilder.group().rotZ(180).y((-group.y * 2) + (request.isFull() ? 0.3f : -0.25f)).addTo(group) : group;
 
         // head
         PrimitiveBuilder.cube().texture(TextureType.HEAD).addTo(group2);
