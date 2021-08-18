@@ -36,12 +36,6 @@ public final class SkinRenderCommand {
         commandMap.registerSubCommands(new RenderCommand(this));
     }
 
-    private BufferedImage test(RenderRequest request) throws InterruptedException, ExecutionException, TimeoutException {
-        CompletableRenderRequest completable = new CompletableRenderRequest(request, new CompletableFuture<>());
-        this.renderContext.queueRequest(completable);
-        return completable.getFuture().get(5, TimeUnit.SECONDS);
-    }
-
     public RenderContext getRenderContext() {
         return this.renderContext;
     }

@@ -31,9 +31,11 @@ import de.hdskins.skinrenderer.request.RenderRequestProperties;
 import de.hdskins.skinrenderer.util.Textures;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLUtil;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -252,7 +254,7 @@ public class RenderContext extends Thread implements AutoCloseable {
         ErrorHandling.checkGLError();
 
         glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         ErrorHandling.checkGLError();
 
         FloatBuffer lightColor = BufferUtils.createFloatBuffer(4);
@@ -359,7 +361,7 @@ public class RenderContext extends Thread implements AutoCloseable {
             glLoadIdentity();
 
             glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glEnable(GL_TEXTURE_2D);
 
@@ -394,7 +396,7 @@ public class RenderContext extends Thread implements AutoCloseable {
             glDisable(GL_ALPHA_TEST);
             glDisable(GL_CULL_FACE);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
