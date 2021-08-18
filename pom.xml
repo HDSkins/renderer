@@ -30,6 +30,14 @@
         <module>renderer-command</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>hdskins</id>
+            <name>HDSkins</name>
+            <url>https://repo.hdskins.de</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>jitpack.io</id>
