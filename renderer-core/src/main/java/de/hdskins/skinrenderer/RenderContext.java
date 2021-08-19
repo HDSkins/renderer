@@ -169,7 +169,7 @@ public class RenderContext extends Thread implements AutoCloseable {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-        // glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
         this.window = glfwCreateWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "Visage v" + Visage.VERSION + " [" + this.getName() + "]", NULL, NULL);
