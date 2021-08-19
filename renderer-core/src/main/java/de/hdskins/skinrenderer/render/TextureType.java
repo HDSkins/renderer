@@ -190,15 +190,15 @@ public enum TextureType {
     ),
     RARM_SLIM_OVERLAY(
             // Front (Red)
-            45, 36, 3, 12,
+            44, 36, 3, 12,
             // Back (Blue)
-            53, 36, 3, 12,
+            51, 36, 3, 12,
             // Top (Purple)
             44, 32, 3, 4,
             // Bottom (Gray)
-            49, 32, 3, 4,
+            47, 32, 3, 4,
             // Left (Yellow)
-            49, 36, 4, 12,
+            47, 36, 4, 12,
             // Right (Green)
             40, 36, 4, 12
     ),
@@ -248,13 +248,13 @@ public enum TextureType {
             // Front (Red)
             52, 52, 3, 12,
             // Back (Blue)
-            60, 52, 3, 12,
+            59, 52, 3, 12,
             // Top (Purple)
             52, 48, 3, 4,
             // Bottom (Gray)
-            56, 48, 3, 4,
+            55, 48, 3, 4,
             // Left (Yellow)
-            56, 52, 4, 12,
+            55, 52, 4, 12,
             // Right (Green)
             48, 52, 4, 12
     ),
