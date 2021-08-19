@@ -89,14 +89,14 @@ public class FlatBodyRenderer extends Renderer {
         PrimitiveBuilder.plane()
                 .x(slim ? -1.375f : -1.5f).z(1f)
                 .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
-                .texture(slim ? TextureType.RARM_SLIM_FRONT : TextureType.RARM_FRONT)
+                .texture(slim ? TextureType.LARM_SLIM_FRONT : TextureType.LARM_FRONT)
                 .addTo(group);
 
         if (overlay) {
             PrimitiveBuilder.plane()
                     .x(slim ? -1.375f : -1.5f).z(0.9999f)
                     .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
-                    .texture(slim ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
+                    .texture(slim ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
                     .depthMask(false)
                     .addTo(group);
         }
@@ -105,14 +105,14 @@ public class FlatBodyRenderer extends Renderer {
         PrimitiveBuilder.plane()
                 .x(slim ? 1.375f : 1.5f).z(1f)
                 .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
-                .texture(slim ? TextureType.LARM_SLIM_FRONT : TextureType.LARM_FRONT)
+                .texture(slim ? TextureType.RARM_SLIM_FRONT : TextureType.RARM_FRONT)
                 .addTo(group);
 
         if (overlay) {
             PrimitiveBuilder.plane()
                     .x(slim ? 1.375f : 1.5f).z(0.9999f)
                     .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
-                    .texture(slim ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
+                    .texture(slim ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
                     .depthMask(false)
                     .addTo(group);
         }

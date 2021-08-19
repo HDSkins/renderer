@@ -83,7 +83,7 @@ public class BodyRenderer extends Renderer {
                 .scale(slim ? 0.375f : 0.5f, 1.5f, 0.5f)
                 .rotX(-rotation.getLegs())
                 .rotZ(-10f)
-                .texture(back, slim ? TextureType.LARM_SLIM : TextureType.LARM)
+                .texture(back, slim ? TextureType.RARM_SLIM : TextureType.RARM)
                 .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                 .addTo(group2);
 
@@ -93,7 +93,7 @@ public class BodyRenderer extends Renderer {
                     .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
                     .rotX(-rotation.getLegs())
                     .rotZ(-10f)
-                    .texture(back, slim ? TextureType.LARM_SLIM_OVERLAY : TextureType.LARM_OVERLAY)
+                    .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
                     .depthMask(false)
                     .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                     .addTo(group2);
@@ -105,7 +105,7 @@ public class BodyRenderer extends Renderer {
                 .scale(slim ? 0.375f : 0.5f, 1.5f, 0.5f)
                 .rotX(rotation.getLegs())
                 .rotZ(10f)
-                .texture(back, slim ? TextureType.RARM_SLIM : TextureType.RARM)
+                .texture(back, slim ? TextureType.LARM_SLIM : TextureType.LARM)
                 .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                 .addTo(group2);
 
@@ -115,7 +115,7 @@ public class BodyRenderer extends Renderer {
                     .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
                     .rotX(rotation.getLegs())
                     .rotZ(10f)
-                    .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
+                    .texture(back, slim ? TextureType.LARM_SLIM_OVERLAY : TextureType.LARM_OVERLAY)
                     .depthMask(false)
                     .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                     .addTo(group2);

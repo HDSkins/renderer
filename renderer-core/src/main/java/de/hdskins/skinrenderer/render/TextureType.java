@@ -31,7 +31,9 @@ import com.google.common.collect.HashBiMap;
 public enum TextureType {
 
     NONE,
-    ALL(0, 0, 64, 64),
+    ALL(
+            0, 0, 64, 64
+    ),
     HEAD(
             // Front (Red)
             8, 8, 8, 8,
@@ -160,15 +162,15 @@ public enum TextureType {
     ),
     RARM_SLIM(
             // Front (Red)
-            45, 20, 3, 12,
+            44, 20, 3, 12,
             // Back (Blue)
-            53, 20, 3, 12,
+            51, 20, 3, 12,
             // Top (Purple)
             44, 16, 3, 4,
             // Bottom (Gray)
-            49, 16, 3, 4,
+            47, 16, 3, 4,
             // Left (Yellow)
-            49, 20, 4, 12,
+            47, 20, 4, 12,
             // Right (Green)
             40, 20, 4, 12
     ),
@@ -218,13 +220,13 @@ public enum TextureType {
             // Front (Red)
             36, 52, 3, 12,
             // Back (Blue)
-            44, 52, 3, 12,
+            43, 52, 3, 12,
             // Top (Purple)
             36, 48, 3, 4,
             // Bottom (Gray)
-            40, 48, 3, 4,
+            39, 48, 3, 4,
             // Left (Yellow)
-            40, 52, 4, 12,
+            39, 52, 4, 12,
             // Right (Green)
             32, 52, 4, 12
     ),
@@ -238,7 +240,7 @@ public enum TextureType {
             // Bottom (Gray)
             56, 48, 4, 4,
             // Left (Yellow)
-            56, 52, 4, 12,
+            58, 52, 4, 12,
             // Right (Green)
             48, 52, 4, 12
     ),
@@ -257,29 +259,54 @@ public enum TextureType {
             48, 52, 4, 12
     ),
 
-    HEAD_FRONT(8, 8, 8, 8),
-    HEAD_FRONT_OVERLAY(40, 8, 8, 8),
-
-    BODY_FRONT(20, 20, 8, 12),
-    BODY_FRONT_OVERLAY(20, 36, 8, 12),
-
-    RLEG_FRONT(4, 20, 4, 12),
-    RLEG_FRONT_OVERLAY(4, 36, 4, 12),
-
-    LLEG_FRONT(20, 52, 4, 12),
-    LLEG_FRONT_OVERLAY(4, 52, 4, 12),
-
-    RARM_FRONT(44, 20, 4, 12),
-    RARM_SLIM_FRONT(45, 20, 3, 12),
-
-    RARM_FRONT_OVERLAY(44, 36, 4, 12),
-    RARM_SLIM_FRONT_OVERLAY(45, 36, 3, 12),
-
-    LARM_FRONT(36, 52, 4, 12),
-    LARM_SLIM_FRONT(36, 52, 3, 12),
-
-    LARM_FRONT_OVERLAY(52, 52, 4, 12),
-    LARM_SLIM_FRONT_OVERLAY(52, 52, 3, 12);
+    HEAD_FRONT(
+            8, 8, 8, 8
+    ),
+    HEAD_FRONT_OVERLAY(
+            40, 8, 8, 8
+    ),
+    BODY_FRONT(
+            20, 20, 8, 12
+    ),
+    BODY_FRONT_OVERLAY(
+            20, 36, 8, 12
+    ),
+    RLEG_FRONT(
+            4, 20, 4, 12
+    ),
+    RLEG_FRONT_OVERLAY(
+            4, 36, 4, 12
+    ),
+    LLEG_FRONT(
+            20, 52, 4, 12
+    ),
+    LLEG_FRONT_OVERLAY(
+            4, 52, 4, 12
+    ),
+    RARM_FRONT(
+            44, 20, 4, 12
+    ),
+    RARM_SLIM_FRONT(
+            45, 20, 3, 12
+    ),
+    RARM_FRONT_OVERLAY(
+            44, 36, 4, 12
+    ),
+    RARM_SLIM_FRONT_OVERLAY(
+            45, 36, 3, 12
+    ),
+    LARM_FRONT(
+            36, 52, 4, 12
+    ),
+    LARM_SLIM_FRONT(
+            36, 52, 3, 12
+    ),
+    LARM_FRONT_OVERLAY(
+            52, 52, 4, 12
+    ),
+    LARM_SLIM_FRONT_OVERLAY(
+            52, 52, 3, 12
+    );
 
     public final int[] rawCoords;
     public final float[] u = new float[24];
