@@ -41,6 +41,9 @@ public class FlatBodyRenderer extends Renderer {
         boolean flipped = request.getProperty(RenderRequestProperties.FLIPPED);
         boolean slim = request.getProperty(RenderRequestProperties.SLIM);
 
+        float overlayScale = request.getProperty(RenderRequestProperties.OVERLAY_SCALE);
+        boolean overlay = overlayScale > 0 && request.getProperty(RenderRequestProperties.OVERLAY);
+
         Group group = PrimitiveBuilder.group()
                 .executeIf(
                         request.isFull(),
@@ -56,12 +59,15 @@ public class FlatBodyRenderer extends Renderer {
                 .x(0).z(-1.5f)
                 .texture(TextureType.HEAD_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .z(-1.5001f)
-                .scale(1.05f)
-                .texture(TextureType.HEAD_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .z(-1.5001f)
+                    .scale(overlayScale)
+                    .texture(TextureType.HEAD_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
 
         // body
         PrimitiveBuilder.plane()
@@ -69,12 +75,15 @@ public class FlatBodyRenderer extends Renderer {
                 .scaleZ(1.5f)
                 .texture(TextureType.BODY_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .z(0.9999f)
-                .scale(1.05f, 1.05f, 1.55f)
-                .texture(TextureType.BODY_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .z(0.9999f)
+                    .scale(overlayScale, overlayScale, 1.55f)
+                    .texture(TextureType.BODY_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
 
         // right arm
         PrimitiveBuilder.plane()
@@ -82,12 +91,15 @@ public class FlatBodyRenderer extends Renderer {
                 .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
                 .texture(slim ? TextureType.RARM_SLIM_FRONT : TextureType.RARM_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .x(slim ? -1.375f : -1.5f).z(0.9999f)
-                .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
-                .texture(slim ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .x(slim ? -1.375f : -1.5f).z(0.9999f)
+                    .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
+                    .texture(slim ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
 
         // left arm
         PrimitiveBuilder.plane()
@@ -95,12 +107,15 @@ public class FlatBodyRenderer extends Renderer {
                 .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
                 .texture(slim ? TextureType.LARM_SLIM_FRONT : TextureType.LARM_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .x(slim ? 1.375f : 1.5f).z(0.9999f)
-                .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
-                .texture(slim ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .x(slim ? 1.375f : 1.5f).z(0.9999f)
+                    .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
+                    .texture(slim ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
 
         // left leg
         PrimitiveBuilder.plane()
@@ -108,12 +123,15 @@ public class FlatBodyRenderer extends Renderer {
                 .scaleX(0.5f).scaleZ(1.5f)
                 .texture(TextureType.LLEG_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .x(0.4999f).z(3.9999f)
-                .scaleX(1.55f).scaleZ(0.55f)
-                .texture(TextureType.LLEG_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .x(0.4999f).z(3.9999f)
+                    .scaleX(1.55f).scaleZ(0.55f)
+                    .texture(TextureType.LLEG_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
 
         // right leg
         PrimitiveBuilder.plane()
@@ -121,12 +139,15 @@ public class FlatBodyRenderer extends Renderer {
                 .scaleX(0.5f).scaleZ(1.5f)
                 .texture(TextureType.RLEG_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .x(-0.4999f).z(3.9999f)
-                .scaleX(0.55f).scaleZ(1.55f)
-                .texture(TextureType.RLEG_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .x(-0.4999f).z(3.9999f)
+                    .scaleX(0.55f).scaleZ(1.55f)
+                    .texture(TextureType.RLEG_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
     }
 
 }

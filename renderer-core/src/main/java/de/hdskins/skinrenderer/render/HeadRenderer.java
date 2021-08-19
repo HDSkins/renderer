@@ -43,6 +43,9 @@ public class HeadRenderer extends Renderer {
         float tilt = rotation.getY();
         float angle = rotation.getX();
 
+        float overlayScale = request.getProperty(RenderRequestProperties.OVERLAY_SCALE);
+        boolean overlay = overlayScale > 0 && request.getProperty(RenderRequestProperties.OVERLAY);
+
         Group group = PrimitiveBuilder.group()
                 .y(-0.25f).z(-5f)
                 .rotX(tilt).rotY(angle)
@@ -64,11 +67,14 @@ public class HeadRenderer extends Renderer {
                 .texture(TextureType.HEAD)
                 .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180))
                 .addTo(group);
-        PrimitiveBuilder.cube()
-                .scale(1.05f)
-                .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180))
-                .texture(TextureType.HEAD_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.cube()
+                    .scale(overlayScale)
+                    .executeIf(request.getProperty(RenderRequestProperties.FLIPPED), builder -> builder.rotZ(180))
+                    .texture(TextureType.HEAD_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
     }
 }

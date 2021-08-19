@@ -27,6 +27,7 @@ package de.hdskins.skinrenderer.render;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+// TODO Slim is using the wrong position for the arms
 public enum TextureType {
 
     NONE,

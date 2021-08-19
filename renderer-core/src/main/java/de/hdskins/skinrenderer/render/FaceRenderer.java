@@ -38,6 +38,8 @@ public class FaceRenderer extends Renderer {
 
     @Override
     protected void initPrimitives(RenderRequest request, boolean back) {
+        float overlayScale = request.getProperty(RenderRequestProperties.OVERLAY_SCALE);
+        boolean overlay = overlayScale > 0 && request.getProperty(RenderRequestProperties.OVERLAY);
 
         Group group = PrimitiveBuilder.group()
                 .y(0).z(-2.5f)
@@ -50,11 +52,14 @@ public class FaceRenderer extends Renderer {
                 .y(0).z(0)
                 .texture(TextureType.HEAD_FRONT)
                 .addTo(group);
-        PrimitiveBuilder.plane()
-                .scale(1.05f)
-                .texture(TextureType.HEAD_FRONT_OVERLAY)
-                .depthMask(false)
-                .addTo(group);
+
+        if (overlay) {
+            PrimitiveBuilder.plane()
+                    .scale(overlayScale)
+                    .texture(TextureType.HEAD_FRONT_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group);
+        }
     }
 
 }

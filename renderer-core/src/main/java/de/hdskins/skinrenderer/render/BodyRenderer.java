@@ -45,6 +45,9 @@ public class BodyRenderer extends Renderer {
         boolean flipped = request.getProperty(RenderRequestProperties.FLIPPED);
         boolean slim = request.getProperty(RenderRequestProperties.SLIM);
 
+        float overlayScale = request.getProperty(RenderRequestProperties.OVERLAY_SCALE);
+        boolean overlay = overlayScale > 0 && request.getProperty(RenderRequestProperties.OVERLAY);
+
         Group group = PrimitiveBuilder.group()
                 .x(0).y(request.isFull() ? (flipped ? -2.7f : -2.8f) : -1f).z(request.isFull() ? -10.35f : -6f)
                 .rotX(tilt).rotY(angle)
@@ -64,11 +67,15 @@ public class BodyRenderer extends Renderer {
 
         // head
         PrimitiveBuilder.cube().texture(TextureType.HEAD).addTo(group2);
-        PrimitiveBuilder.cube().scale(1.05f).texture(TextureType.HEAD_OVERLAY).depthMask(false).addTo(group2);
+        if (overlay) {
+            PrimitiveBuilder.cube().scale(overlayScale).texture(TextureType.HEAD_OVERLAY).depthMask(false).addTo(group2);
+        }
 
         // body
         PrimitiveBuilder.cube().y(2.5f).scaleY(1.5f).scaleZ(0.5f).texture(TextureType.BODY).addTo(group2);
-        PrimitiveBuilder.cube().y(2.5f).scale(1.05f, 1.55f, 0.55f).texture(TextureType.BODY_OVERLAY).depthMask(false).addTo(group2);
+        if (overlay) {
+            PrimitiveBuilder.cube().y(2.5f).scale(overlayScale, 1.55f, 0.55f).texture(TextureType.BODY_OVERLAY).depthMask(false).addTo(group2);
+        }
 
         // left arm
         PrimitiveBuilder.cube()
@@ -79,15 +86,18 @@ public class BodyRenderer extends Renderer {
                 .texture(back, slim ? TextureType.LARM_SLIM : TextureType.LARM)
                 .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                 .addTo(group2);
-        PrimitiveBuilder.cube()
-                .x(slim ? 1.375f : 1.5f).y(2.5f)
-                .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
-                .rotX(-rotation.getLegs())
-                .rotZ(-10f)
-                .texture(back, slim ? TextureType.LARM_SLIM_OVERLAY : TextureType.LARM_OVERLAY)
-                .depthMask(false)
-                .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
-                .addTo(group2);
+
+        if (overlay) {
+            PrimitiveBuilder.cube()
+                    .x(slim ? 1.375f : 1.5f).y(2.5f)
+                    .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
+                    .rotX(-rotation.getLegs())
+                    .rotZ(-10f)
+                    .texture(back, slim ? TextureType.LARM_SLIM_OVERLAY : TextureType.LARM_OVERLAY)
+                    .depthMask(false)
+                    .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                    .addTo(group2);
+        }
 
         // right arm
         PrimitiveBuilder.cube()
@@ -98,15 +108,18 @@ public class BodyRenderer extends Renderer {
                 .texture(back, slim ? TextureType.RARM_SLIM : TextureType.RARM)
                 .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                 .addTo(group2);
-        PrimitiveBuilder.cube()
-                .x(slim ? -1.375f : -1.5f).y(2.5f)
-                .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
-                .rotX(rotation.getLegs())
-                .rotZ(10f)
-                .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
-                .depthMask(false)
-                .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
-                .addTo(group2);
+
+        if (overlay) {
+            PrimitiveBuilder.cube()
+                    .x(slim ? -1.375f : -1.5f).y(2.5f)
+                    .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
+                    .rotX(rotation.getLegs())
+                    .rotZ(10f)
+                    .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
+                    .depthMask(false)
+                    .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                    .addTo(group2);
+        }
 
         // left leg
         PrimitiveBuilder.cube()
@@ -116,14 +129,17 @@ public class BodyRenderer extends Renderer {
                 .anchorY(-1.5f)
                 .texture(back, TextureType.LLEG)
                 .addTo(group2);
-        PrimitiveBuilder.cube()
-                .x(0.5f).y(5.5f)
-                .rotX(rotation.getLegs())
-                .scale(0.55f, 1.55f, 0.55f)
-                .anchorY(-1.55f)
-                .texture(back, TextureType.LLEG_OVERLAY)
-                .depthMask(false)
-                .addTo(group2);
+
+        if (overlay) {
+            PrimitiveBuilder.cube()
+                    .x(0.5f).y(5.5f)
+                    .rotX(rotation.getLegs())
+                    .scale(0.55f, 1.55f, 0.55f)
+                    .anchorY(-1.55f)
+                    .texture(back, TextureType.LLEG_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group2);
+        }
 
         // right leg
         PrimitiveBuilder.cube()
@@ -133,14 +149,17 @@ public class BodyRenderer extends Renderer {
                 .anchorY(-1.5f)
                 .texture(back, TextureType.RLEG)
                 .addTo(group2);
-        PrimitiveBuilder.cube()
-                .x(-0.5f).y(5.5f)
-                .rotX(-rotation.getLegs())
-                .scale(0.55f, 1.55f, 0.55f)
-                .anchorY(-1.55f)
-                .texture(back, TextureType.RLEG_OVERLAY)
-                .depthMask(false)
-                .addTo(group2);
+
+        if (overlay) {
+            PrimitiveBuilder.cube()
+                    .x(-0.5f).y(5.5f)
+                    .rotX(-rotation.getLegs())
+                    .scale(0.55f, 1.55f, 0.55f)
+                    .anchorY(-1.55f)
+                    .texture(back, TextureType.RLEG_OVERLAY)
+                    .depthMask(false)
+                    .addTo(group2);
+        }
     }
 
 }

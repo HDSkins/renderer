@@ -5,6 +5,7 @@ import de.hdskins.skinrenderer.RenderMode;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -109,7 +110,10 @@ public class RenderRequest {
                 if (suppressNotApplicable) {
                     return this;
                 }
-                throw new IllegalStateException("Property " + property.getId() + " is not applicable for the mode " + this.mode);
+
+                Field field = RenderRequestProperties.getPropertyField(property);
+                String id = field != null ? field.getName() : String.valueOf(property.getId());
+                throw new IllegalStateException("Property " + id + " is not applicable for the mode " + this.mode);
             }
             this.properties.put((RenderRequestProperty<Object>) property, value);
             return this;

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,12 +38,15 @@ public class RenderRequestProperties {
                 stream.writeInt(rotation.getLegs());
             },
             stream -> new RenderRotation(stream.readInt(), stream.readInt(), stream.readInt()),
-            RenderMode.FULL, RenderMode.BUST, RenderMode.HEAD
+            RenderMode.dimension(3)
     );
 
     public static final RenderRequestProperty<Boolean> FLIPPED = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
     public static final RenderRequestProperty<Boolean> SLIM = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.body());
     public static final RenderRequestProperty<Boolean> SHADOW = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.dimension(2));
+
+    public static final RenderRequestProperty<Boolean> OVERLAY = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
+    public static final RenderRequestProperty<Float> OVERLAY_SCALE = simple(mode -> 1.05F, DataOutputStream::writeFloat, DataInputStream::readFloat, RenderMode.values());
 
     public static int getNextId() {
         return currentId++;
@@ -73,6 +77,20 @@ public class RenderRequestProperties {
             throw new RequestPropertyNotFoundException(id);
         }
         return property;
+    }
+
+    public static Field getPropertyField(RenderRequestProperty<?> property) {
+        for (Field field : RenderRequestProperties.class.getDeclaredFields()) {
+            try {
+                if (field.get(null) == property) {
+                    return field;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
     }
 
     public static List<RenderRequestProperty<?>> getProperties() {
