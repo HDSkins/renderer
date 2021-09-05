@@ -44,6 +44,7 @@ public class RenderRequestProperties {
     public static final RenderRequestProperty<Boolean> FLIPPED = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
     public static final RenderRequestProperty<Boolean> SLIM = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.body());
     public static final RenderRequestProperty<Boolean> SHADOW = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.dimension(2));
+    public static final RenderRequestProperty<Boolean> EDGE_SMOOTHING = simple(mode -> false, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
 
     public static final RenderRequestProperty<Boolean> OVERLAY = simple(mode -> true, DataOutputStream::writeBoolean, DataInputStream::readBoolean, RenderMode.values());
     public static final RenderRequestProperty<Float> OVERLAY_SCALE = simple(mode -> 1.05F, DataOutputStream::writeFloat, DataInputStream::readFloat, RenderMode.values());

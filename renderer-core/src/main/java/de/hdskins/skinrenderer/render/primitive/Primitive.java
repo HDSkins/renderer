@@ -27,6 +27,7 @@ package de.hdskins.skinrenderer.render.primitive;
 import de.hdskins.skinrenderer.render.Renderer;
 import de.hdskins.skinrenderer.render.TextureType;
 import de.hdskins.skinrenderer.request.RenderRequest;
+import de.hdskins.skinrenderer.request.RenderRequestProperties;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -51,7 +52,7 @@ public abstract class Primitive {
 
     public abstract void render(RenderRequest request, boolean back, Renderer renderer);
 
-    protected void doRender(Renderer renderer, int vbo, int tcbo, float[] vertices) {
+    protected void doRender(RenderRequest request, Renderer renderer, int vbo, int tcbo, float[] vertices) {
         glPushMatrix();
         glDepthMask(this.depthMask);
         glTranslatef(this.x, this.y, this.z);
@@ -77,7 +78,9 @@ public abstract class Primitive {
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             } else {
                 glBindTexture(GL_TEXTURE_2D, renderer.skinFboTex);
-                glUseProgram(renderer.owner.textureFilterProgram);
+                glUseProgram(request.getProperty(RenderRequestProperties.EDGE_SMOOTHING)
+                        ? renderer.owner.textureFilterProgram
+                        : 0);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             }

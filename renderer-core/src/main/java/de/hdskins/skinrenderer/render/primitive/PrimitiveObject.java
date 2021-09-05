@@ -28,6 +28,6 @@ public abstract class PrimitiveObject extends Primitive {
             glBindBuffer(GL_ARRAY_BUFFER, this.tcbo);
             glBufferData(GL_ARRAY_BUFFER, uv, GL_STATIC_DRAW);
         }
-        this.doRender(renderer, this.vbo(renderer), this.tcbo, this.vertices(request, back, renderer));
+        this.doRender(request, renderer, this.vbo(renderer), this.tcbo, this.vertices(request, back, renderer));
     }
 }
