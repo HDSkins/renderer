@@ -41,57 +41,18 @@ import java.nio.IntBuffer;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import static org.lwjgl.glfw.GLFW.GLFW_CLIENT_API;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
-import static org.lwjgl.glfw.GLFW.GLFW_DOUBLEBUFFER;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_API;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 import static org.lwjgl.opengl.GL14.GL_DEPTH_COMPONENT24;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0;
-import static org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT;
-import static org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.GL_MAX_SAMPLES;
-import static org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.GL_RENDERBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
-import static org.lwjgl.opengl.GL30.glBindRenderbuffer;
-import static org.lwjgl.opengl.GL30.glBlitFramebuffer;
-import static org.lwjgl.opengl.GL30.glFramebufferRenderbuffer;
-import static org.lwjgl.opengl.GL30.glFramebufferTexture2D;
-import static org.lwjgl.opengl.GL30.glGenFramebuffers;
-import static org.lwjgl.opengl.GL30.glGenRenderbuffers;
-import static org.lwjgl.opengl.GL30.glRenderbufferStorageMultisample;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class RenderContext extends Thread implements AutoCloseable {
-
-    private static final int CANVAS_WIDTH = 512;
-    private static final int CANVAS_HEIGHT = 832;
 
     private static final BufferedImage shadow;
     private static final BufferedImage skinUnderlay;
@@ -131,9 +92,7 @@ public class RenderContext extends Thread implements AutoCloseable {
     @Override
     public void run() {
         try {
-            if (this.requiresInitialization) {
-                this.init();
-            }
+            this.openWindow();
 
             try {
 
@@ -158,25 +117,9 @@ public class RenderContext extends Thread implements AutoCloseable {
         }
     }
 
-    private void init() throws IOException {
-        if (!glfwInit()) {
-            ErrorHandling.checkGLFWError();
-            throw new RuntimeException("Failed to initialize GLFW");
-        }
+    private void openWindow() throws IOException {
+        this.window = GLContext.getInstance().createWindow(this.getName());
 
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-
-        this.window = glfwCreateWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "Visage v" + Visage.VERSION + " [" + this.getName() + "]", NULL, NULL);
-        if (this.window == NULL) {
-            ErrorHandling.checkGLFWError();
-            throw new RuntimeException("Failed to create window");
-        }
         glfwMakeContextCurrent(this.window);
         GL.createCapabilities();
         GLUtil.setupDebugMessageCallback();
@@ -219,7 +162,7 @@ public class RenderContext extends Thread implements AutoCloseable {
         glBindTexture(GL_TEXTURE_2D, this.swapFboTex);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, CANVAS_WIDTH, CANVAS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, GLContext.CANVAS_WIDTH, GLContext.CANVAS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         ErrorHandling.checkGLError();
@@ -234,10 +177,10 @@ public class RenderContext extends Thread implements AutoCloseable {
         int samples = Math.min(8, glGetInteger(GL_MAX_SAMPLES));
 
         glBindRenderbuffer(GL_RENDERBUFFER, depth);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT24, CANVAS_WIDTH, CANVAS_HEIGHT);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT24, GLContext.CANVAS_WIDTH, GLContext.CANVAS_HEIGHT);
 
         glBindRenderbuffer(GL_RENDERBUFFER, color);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA8, CANVAS_WIDTH, CANVAS_HEIGHT);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA8, GLContext.CANVAS_WIDTH, GLContext.CANVAS_HEIGHT);
 
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color);
@@ -422,7 +365,7 @@ public class RenderContext extends Thread implements AutoCloseable {
 
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this.swapFbo);
             glBindFramebuffer(GL_READ_FRAMEBUFFER, this.fbo);
-            glBlitFramebuffer(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+            glBlitFramebuffer(0, 0, GLContext.CANVAS_WIDTH, GLContext.CANVAS_HEIGHT, 0, 0, GLContext.CANVAS_WIDTH, GLContext.CANVAS_HEIGHT, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -441,7 +384,7 @@ public class RenderContext extends Thread implements AutoCloseable {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
 
-            glViewport(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            glViewport(0, 0, GLContext.CANVAS_WIDTH, GLContext.CANVAS_HEIGHT);
             glBindTexture(GL_TEXTURE_2D, this.swapFboTex);
             this.drawQuad(0, 0, 1, 1);
 
