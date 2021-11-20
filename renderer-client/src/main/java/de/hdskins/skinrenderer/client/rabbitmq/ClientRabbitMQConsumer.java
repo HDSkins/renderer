@@ -6,8 +6,6 @@ import com.rabbitmq.client.Envelope;
 import de.hdskins.skinrenderer.client.RenderResponse;
 import de.hdskins.skinrenderer.shared.RabbitMQConsumer;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -36,14 +34,14 @@ public class ClientRabbitMQConsumer extends RabbitMQConsumer {
 
         String renderer = null;
         long millis = -1;
-        BufferedImage image = null;
+        byte[] image = null;
         Throwable throwable = null;
 
         if (success) {
             try (DataInputStream inputStream = new DataInputStream(byteArrayInputStream)) {
                 renderer = inputStream.readUTF();
                 millis = inputStream.readLong();
-                image = ImageIO.read(byteArrayInputStream);
+                image = byteArrayInputStream.readAllBytes();
             }
         } else {
             try (ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream)) {
