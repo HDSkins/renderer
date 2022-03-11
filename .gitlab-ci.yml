@@ -1,0 +1,35 @@
+default:
+  tags:
+    - linux
+
+stages:
+  - build
+#  - update
+
+build:
+  stage: build
+  script:
+    - chmod +x mvnw
+    - ./mvnw install
+  artifacts:
+    paths:
+      - renderer-server/target/HDSkinsSkinRenderer.jar
+
+#update:
+#  stage: update
+#  only:
+#    - master
+#  needs:
+#    - build
+#  script:
+#    - 'curl -X POST --data-binary "@./renderer-server/target/HDSkinsSkinRenderer.jar" -H "Token: "$RESTART_TOKEN"" 172.17.0.1:1070/services/renderer/restart/scheduled'
+
+#instant_update:
+#  stage: update
+#  only:
+#    - master
+#  needs:
+#    - build
+#  when: manual
+#  script:
+#    - 'curl -X POST --data-binary "@./renderer-server/target/HDSkinsSkinRenderer.jar" -H "Token: "$RESTART_TOKEN"" 172.17.0.1:1070/services/renderer/restart/instant'
