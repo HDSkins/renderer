@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.hdskins.renderer</groupId>
         <artifactId>skin-renderer-root</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
     </parent>
 
     <artifactId>renderer-core</artifactId>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>de.hdskins.renderer</groupId>
             <artifactId>renderer-common</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
             <scope>compile</scope>
         </dependency>
 
