@@ -23,6 +23,7 @@
  */
 
 package de.hdskins.skinrenderer.render.primitive;
+
 import de.hdskins.skinrenderer.Vertices;
 import de.hdskins.skinrenderer.render.Renderer;
 import de.hdskins.skinrenderer.request.RenderRequest;

@@ -79,34 +79,12 @@ public class BodyRenderer extends Renderer {
 
         // left arm
         PrimitiveBuilder.cube()
-                .x(slim ? 1.375f : 1.5f).y(2.5f)
-                .scale(slim ? 0.375f : 0.5f, 1.5f, 0.5f)
-                .rotX(-rotation.getLegs())
-                .rotZ(-10f)
-                .texture(back, slim ? TextureType.RARM_SLIM : TextureType.RARM)
-                .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
-                .addTo(group2);
-
-        if (overlay) {
-            PrimitiveBuilder.cube()
-                    .x(slim ? 1.375f : 1.5f).y(2.5f)
-                    .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
-                    .rotX(-rotation.getLegs())
-                    .rotZ(-10f)
-                    .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
-                    .depthMask(false)
-                    .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
-                    .addTo(group2);
-        }
-
-        // right arm
-        PrimitiveBuilder.cube()
                 .x(slim ? -1.375f : -1.5f).y(2.5f)
                 .scale(slim ? 0.375f : 0.5f, 1.5f, 0.5f)
                 .rotX(rotation.getLegs())
                 .rotZ(10f)
-                .texture(back, slim ? TextureType.LARM_SLIM : TextureType.LARM)
-                .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                .texture(back, slim ? TextureType.RARM_SLIM : TextureType.RARM)
+                .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
                 .addTo(group2);
 
         if (overlay) {
@@ -115,6 +93,28 @@ public class BodyRenderer extends Renderer {
                     .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
                     .rotX(rotation.getLegs())
                     .rotZ(10f)
+                    .texture(back, slim ? TextureType.RARM_SLIM_OVERLAY : TextureType.RARM_OVERLAY)
+                    .depthMask(false)
+                    .execute(builder -> builder.anchorX(-builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                    .addTo(group2);
+        }
+
+        // right arm
+        PrimitiveBuilder.cube()
+                .x(slim ? 1.375f : 1.5f).y(2.5f)
+                .scale(slim ? 0.375f : 0.5f, 1.5f, 0.5f)
+                .rotX(-rotation.getLegs())
+                .rotZ(-10f)
+                .texture(back, slim ? TextureType.LARM_SLIM : TextureType.LARM)
+                .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))
+                .addTo(group2);
+
+        if (overlay) {
+            PrimitiveBuilder.cube()
+                    .x(slim ? 1.375f : 1.5f).y(2.5f)
+                    .scale(slim ? 0.425f : 0.55f, 1.55f, 0.55f)
+                    .rotX(-rotation.getLegs())
+                    .rotZ(-10f)
                     .texture(back, slim ? TextureType.LARM_SLIM_OVERLAY : TextureType.LARM_OVERLAY)
                     .depthMask(false)
                     .execute(builder -> builder.anchorX(builder.primitive().scaleX).anchorY(-builder.primitive().scaleY))

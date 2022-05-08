@@ -240,7 +240,7 @@ public enum TextureType {
             // Bottom (Gray)
             56, 48, 4, 4,
             // Left (Yellow)
-            58, 52, 4, 12,
+            56, 52, 4, 12,
             // Right (Green)
             48, 52, 4, 12
     ),
@@ -317,6 +317,13 @@ public enum TextureType {
     private static final int WIDTH = 64;
     private static final int HEIGHT = 64;
 
+    private static final int FRONT = 0;
+    private static final int BACK = 1;
+    private static final int TOP = 2;
+    private static final int BOTTOM = 3;
+    private static final int LEFT = 4;
+    private static final int RIGHT = 5;
+
     static {
         OPPOSITES.put(RARM, LARM);
         OPPOSITES.put(RARM_OVERLAY, LARM_OVERLAY);
@@ -348,6 +355,18 @@ public enum TextureType {
             int y = assorted[idx + 1];
             int edgeX = x + assorted[idx + 2];
             int edgeY = y + assorted[idx + 3];
+
+            if (i == BOTTOM) {
+                /*
+                int tx = x;
+                x = edgeX;
+                edgeX = tx;
+                */
+
+                int ty = y;
+                y = edgeY;
+                edgeY = ty;
+            }
 
             // slightly shrink the box to prevent texture bleeding
 

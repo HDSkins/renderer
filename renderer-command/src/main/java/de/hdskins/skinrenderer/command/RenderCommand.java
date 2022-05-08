@@ -45,7 +45,7 @@ public class RenderCommand {
             path -> Files.exists(Paths.get(path)) && !Files.isDirectory(Paths.get(path))
     );
 
-    @SubCommand(args = {"renderMode", "path"}, enableProperties = true, extendedUsage = " | --flipped | --noShadow | --slim | rotX=<rotationX> | rotY=<rotationY> | legs=<rotationLegs>")
+    @SubCommand(args = {"renderMode", "path"}, enableProperties = true, extendedUsage = " | --flipped | --noOverlay | --noShadow | --slim | rotX=<rotationX> | rotY=<rotationY> | legs=<rotationLegs>")
     public void render(CommandSender sender, CommandArgumentWrapper args, CommandProperties properties) {
         RenderMode mode = (RenderMode) args.argument(0);
         Path path = Paths.get((String) args.argument("path"));
@@ -73,6 +73,10 @@ public class RenderCommand {
         if (properties.getBoolean("noShadow")) {
             builder.withProperty(RenderRequestProperties.SHADOW, false, true);
         }
+        if (properties.getBoolean("noOverlay")) {
+            builder.withProperty(RenderRequestProperties.OVERLAY, false, true);
+        }
+
         int rotationX = properties.getInt("rotX", mode.getDefaultRotationX());
         int rotationY = properties.getInt("rotY", mode.getDefaultRotationY());
         int rotationLegs = properties.getInt("legs", 0);

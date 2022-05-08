@@ -87,14 +87,14 @@ public class FlatBodyRenderer extends Renderer {
 
         // right arm
         PrimitiveBuilder.plane()
-                .x(slim ? -1.375f : -1.5f).z(1f)
+                .x(slim ? 1.375f : 1.5f).z(1f)
                 .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
                 .texture(slim ? TextureType.LARM_SLIM_FRONT : TextureType.LARM_FRONT)
                 .addTo(group);
 
         if (overlay) {
             PrimitiveBuilder.plane()
-                    .x(slim ? -1.375f : -1.5f).z(0.9999f)
+                    .x(slim ? 1.375f : 1.5f).z(0.9999f)
                     .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
                     .texture(slim ? TextureType.LARM_SLIM_FRONT_OVERLAY : TextureType.LARM_FRONT_OVERLAY)
                     .depthMask(false)
@@ -103,14 +103,14 @@ public class FlatBodyRenderer extends Renderer {
 
         // left arm
         PrimitiveBuilder.plane()
-                .x(slim ? 1.375f : 1.5f).z(1f)
+                .x(slim ? -1.375f : -1.5f).z(1f)
                 .scaleX(slim ? 0.375f : 0.5f).scaleZ(1.5f)
                 .texture(slim ? TextureType.RARM_SLIM_FRONT : TextureType.RARM_FRONT)
                 .addTo(group);
 
         if (overlay) {
             PrimitiveBuilder.plane()
-                    .x(slim ? 1.375f : 1.5f).z(0.9999f)
+                    .x(slim ? -1.375f : -1.5f).z(0.9999f)
                     .scaleX(slim ? 0.425f : 0.55f).scaleZ(1.55f)
                     .texture(slim ? TextureType.RARM_SLIM_FRONT_OVERLAY : TextureType.RARM_FRONT_OVERLAY)
                     .depthMask(false)
@@ -127,7 +127,7 @@ public class FlatBodyRenderer extends Renderer {
         if (overlay) {
             PrimitiveBuilder.plane()
                     .x(0.4999f).z(3.9999f)
-                    .scaleX(1.55f).scaleZ(0.55f)
+                    .scaleX(0.55f).scaleZ(1.55f)
                     .texture(TextureType.LLEG_FRONT_OVERLAY)
                     .depthMask(false)
                     .addTo(group);
@@ -135,7 +135,7 @@ public class FlatBodyRenderer extends Renderer {
 
         // right leg
         PrimitiveBuilder.plane()
-                .x(-0.5f).z(5f)
+                .x(-0.5f).z(4f)
                 .scaleX(0.5f).scaleZ(1.5f)
                 .texture(TextureType.RLEG_FRONT)
                 .addTo(group);
